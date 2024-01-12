@@ -1,11 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import Plot from 'react-plotly.js'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState({})
+
+  // fetch data from http://127.0.0.1:5000/
+  const getData = async () => {
+    const response = await fetch('http://localhost:5000/').then(res => res.json())
+    setData(response)
+  }
+
+  useEffect(() => {
+    getData()
+  });
+
+  console.log(data)
 
   return (
     <>
