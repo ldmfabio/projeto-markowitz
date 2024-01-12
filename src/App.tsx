@@ -23,7 +23,19 @@ function App() {
       <div>
         <Plot
           data={data['data']}
-          layout={data['layout']} />
+          layout={{ 
+            title: "Fronteira Eficiente", 
+            width: 1200, 
+            height: 700, 
+            plot_bgcolor: '#E5ECF6',
+            yaxis: {
+              title: "Retorno",
+            },
+            xaxis: {
+              title: "Risco",
+            }
+            
+            }} />
           
       </div>
       <p className="read-the-docs">
