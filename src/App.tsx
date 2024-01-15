@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Plot from 'react-plotly.js'
 import './App.css'
 
@@ -8,7 +6,7 @@ function App() {
   const [data, setData]:any = useState({})
 
   const fetchData = async () => {
-    const response = await fetch('http://localhost:5000/')
+    const response = await fetch('http://localhost:5000/graph')
     const data = await response.json()
     setData(data)
   }
