@@ -19,6 +19,9 @@ function App() {
   return (
     <>
       <div>
+        <h1 className="text-3xl font-bold m-4">
+          Projeto-Markowitz
+        </h1>
         <Plot
           data={data['data']}
           layout={{ 
@@ -36,9 +39,21 @@ function App() {
             }} />
           
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="bg-white rounded px-10 pt-10 pb-8 mb-4">
+        <form action="http://localhost:5000/graph" method="POST">
+          <div className='flex flex-col items-start'>
+            <div className='m-2'>
+              <label className='text-black' htmlFor="start">Data inicial:</label>
+              <input className='rounded bg-gray-600' type="date" id="start" name="start" />
+            </div>
+            <div className='m-2'>
+              <label className='text-black' htmlFor="start">Data final:</label>
+              <input className='rounded bg-gray-600' type="date" id="end" name="end" />
+            </div>
+          </div>
+          <input className='rounded bg-gray-600 p-3' type="submit" value="Submit" />
+        </form>
+      </div>
     </>
   )
 }
