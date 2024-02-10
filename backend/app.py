@@ -21,6 +21,7 @@ def index():
 @app.route('/graph', methods=['POST'])
 @cross_origin()
 def graph():
-    start_date = request.form['start']
-    end_date = request.form['end']
+    data = request.get_json()
+    start_date = data['start']
+    end_date = data['end']
     return jsonify(get_graph(start_date, end_date))

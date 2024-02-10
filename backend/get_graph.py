@@ -89,6 +89,7 @@ def get_graph(start_date, end_date):
     if risco_requerido > risk_sharpe:
         print('Risco maior que aquele associado à carteira de Sharpe ótimo!')
         print('Não há carteira ótima com esse risco!')
+        return "bla"
     else:
         peso_requerido = risco_requerido/risk_sharpe
         print('Portfólio com risco definido:')
