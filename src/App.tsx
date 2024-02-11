@@ -33,12 +33,12 @@ function App() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold mt-4">
+      <h1 className="text-3xl font-bold m-4">
         MKZ Frontier
       </h1>
       <div className='flex justify-center'>
         <div>
-          <div className='m-6'>
+          <div className='m-1'>
             <Plot
               data={graphData}
               layout={{
@@ -50,20 +50,32 @@ function App() {
             />
           </div>
 
-          <div className="bg-white m-6 py-2">
+          <div className="bg-white m-1">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className='flex justify-start m-5'>
-                <div className='m-1'>
-                  <label className='text-black'>Data inicial:</label>
-                  <input defaultValue={'2022-01-01'} className='rounded bg-gray-600' type="date" {...register("start")} />
+              <div className='flex flex-col p-7'>
+
+                <div className='flex'>
+                  <div className='m-4'>
+                    <label className='text-black font-bold'>Data inicial: </label>
+                    <input defaultValue={'2022-01-01'} className='p-2 rounded bg-black' type="date" {...register("start")} />
+                  </div>
+
+                  <div className='m-4'>
+                    <label className='text-black font-bold'>Data final: </label>
+                    <input defaultValue={'2023-01-01'} className='p-2 rounded bg-black' type="date" {...register("end")} />
+                  </div>
+                  
+                  <div className='m-4'>
+                    <label className='text-black font-bold'>Portifólios: </label>
+                    <select className='p-2 rounded bg-black' name="select">
+                      <option value="port1">Portifólio 1</option>
+                      <option value="port2" selected>Portifólio 2</option>
+                      <option value="port3">Portifólio 3</option>
+                    </select>
+                  </div>
                 </div>
-                
-                <div className='m-1'>
-                  <label className='text-black'>Data final:</label>
-                  <input defaultValue={'2023-01-01'} className='rounded bg-gray-600' type="date" {...register("end")} />
-                </div>
+                <input className='p-3 m-1 rounded bg-black' type="submit" value="Submit" />
               </div>
-              <input className='rounded bg-gray-600 p-3' type="submit" value="Submit" />
             </form>
           </div>
         </div>
@@ -104,10 +116,7 @@ function App() {
               </ul>
             </div>
           </div>
-          
-          
         </div>
-
       </div>
     </>
   )
