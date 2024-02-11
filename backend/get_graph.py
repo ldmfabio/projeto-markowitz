@@ -14,13 +14,12 @@ import json
 def get_graph(start_date, end_date): 
     np.random.seed(777)
 
-    stocks = ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA"]
+    stocks = ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
 
     start_date = start_date
     end_date = end_date
 
     table = yf.download(stocks, start=start_date, end=end_date)['Adj Close']
-    table.columns=['PETRO', 'VALE', 'ITAÚ', 'EMBRAER']
 
     # ===========================================
 
@@ -61,8 +60,10 @@ def get_graph(start_date, end_date):
     print('Portfólio de Menor Risco:') # x * (10 ^ (-01))
     decimal_number = portfolios[i_min]
     percentage_number = [x * 100 for x in decimal_number]
+    low_risk_portfolio = []
     for i in range(len(stocks)):
         print(f'{stocks[i]}: {percentage_number[i]:.2f}%')
+        low_risk_portfolio.append(f'{stocks[i]}: {percentage_number[i]:.2f}%')
     print("===========================================")
 
     # Portfólio de melhor relação risco/retorno (Índice de Sharpe)
@@ -72,8 +73,10 @@ def get_graph(start_date, end_date):
     print('Portfólio de Melhor Relação Risco/Retorno(Sharpe):')
     decimal_number = portfolio_sharpe
     percentage_number = [x * 100 for x in decimal_number]
+    better_risk_return_portfolio = []
     for i in range(len(stocks)):
         print(f'{stocks[i]}: {percentage_number[i]:.2f}%')
+        better_risk_return_portfolio.append(f'{stocks[i]}: {percentage_number[i]:.2f}%')
     print("===========================================")
 
     # Cálculo da reta tangente
@@ -92,14 +95,17 @@ def get_graph(start_date, end_date):
         return "bla"
     else:
         peso_requerido = risco_requerido/risk_sharpe
-        print('Portfólio com risco definido:')
+        print('Portfólio com Risco Definido:')
         decimal_number = peso_requerido*portfolio_sharpe
         percentage_number = [x * 100 for x in decimal_number]
+        defined_risk_portfolio = []
         for i in range(len(stocks)):
             print(f'{stocks[i]}: {percentage_number[i][0]:.2f}%')
+            defined_risk_portfolio.append(f'{stocks[i]}: {percentage_number[i][0]:.2f}%')
         print("===========================================")
-        print('Peso no ativo livre de risco')
-        print(1.0-peso_requerido)
+        print('Peso no Ativo Livre de Risco')
+        risk_free_rate_asset = f'Ativo Livre de Risco: {(1.0-peso_requerido)*100:.2f}%'
+        print(f'{(1.0-peso_requerido)*100:.2f}%')
         x0 = peso_requerido*risk_sharpe
         y0 = peso_requerido*returno_sharpe + (1.0-peso_requerido)*risk_free_rate
 
@@ -159,4 +165,4 @@ def get_graph(start_date, end_date):
 
     data = fig.to_json()
     data = json.loads(data)
-    return data
+    return [data, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
