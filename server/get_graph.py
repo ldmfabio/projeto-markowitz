@@ -1,11 +1,6 @@
-import pandas as pd
 import yfinance as yf
 import numpy as np
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-import plotly
-import plotly.io as io
-from datetime import datetime
 import cvxopt as opt
 from get_selic import get_selic
 import os
@@ -14,7 +9,8 @@ import json
 def get_graph(start_date, end_date): 
     np.random.seed(777)
 
-    stocks = ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
+    # stocks = ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
+    stocks = ["PETR4.SA", "VALE3.SA", "ITUB4.SA"]
 
     start_date = start_date
     end_date = end_date
@@ -104,7 +100,7 @@ def get_graph(start_date, end_date):
             defined_risk_portfolio.append(f'{stocks[i]}: {percentage_number[i][0]:.2f}%')
         print("===========================================")
         print('Peso no Ativo Livre de Risco')
-        risk_free_rate_asset = f'Ativo Livre de Risco: {(1.0-peso_requerido)*100:.2f}%'
+        risk_free_rate_asset = f'{(1.0-peso_requerido)*100:.2f}%'
         print(f'{(1.0-peso_requerido)*100:.2f}%')
         x0 = peso_requerido*risk_sharpe
         y0 = peso_requerido*returno_sharpe + (1.0-peso_requerido)*risk_free_rate
@@ -157,7 +153,6 @@ def get_graph(start_date, end_date):
 
     # Atualizando o layout do gráfico
     fig.update_layout(
-        title='Fronteira Eficiente e Portfólios',
         xaxis=dict(title='Risco'),
         yaxis=dict(title='Retorno'),
         showlegend=True,
