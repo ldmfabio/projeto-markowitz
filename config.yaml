@@ -11,10 +11,10 @@ credentials:
       name: John Smith
       password: $2b$12$XBWnn57kDQySW8VjfYEnre4QRwCNvQGit4cow4CFhSCksmhKm0446
     mateus:
-      email: mateusalbano22@gmail.com
+      email: mateusalbano2222@gmail.com
       failed_login_attempts: 0
       logged_in: false
-      name: Mateus Lopes Albano
+      name: Mateus Lopes Alban
       password: $2b$12$camfbYdvnTSbRBwumVlmUegT3XKvRqx6ynpSiZoOkkJ/a3tZQ.jTK
     rbriggs:
       email: rbriggs@gmail.com
@@ -23,10 +23,10 @@ credentials:
       name: Rebecca Briggs
       password: $2b$12$Me1QwE054GzTUDDzbJT6COm8NqmY9dX4iVszagcmb7srqeoD31S2e
     test:
-      email: test@gmail.com
+      email: joass@gmail.com
       failed_login_attempts: 0
       logged_in: false
-      name: JONATAS CARMESIM
+      name: Mateus Lopes Albanoa
       password: $2b$12$tMGLoXerQt45bsY9TeKleeuDuTTSjIUKR5/I9Uui0Tim9bFrzXy/a
 preauthorized:
   emails:
