@@ -1,21 +1,33 @@
+cookie:
+  expiry_days: 30
+  key: random_signature_key
+  name: random_cookie_name
 credentials:
   usernames:
     jsmith:
       email: jsmith@gmail.com
+      failed_login_attempts: 0
+      logged_in: false
       name: John Smith
-      password: abc
+      password: $2b$12$XBWnn57kDQySW8VjfYEnre4QRwCNvQGit4cow4CFhSCksmhKm0446
+    mateus:
+      email: mateusalbano22@gmail.com
+      failed_login_attempts: 0
+      logged_in: false
+      name: Mateus Lopes Albano
+      password: $2b$12$camfbYdvnTSbRBwumVlmUegT3XKvRqx6ynpSiZoOkkJ/a3tZQ.jTK
     rbriggs:
       email: rbriggs@gmail.com
+      failed_login_attempts: 0
+      logged_in: false
       name: Rebecca Briggs
-      password: def
+      password: $2b$12$Me1QwE054GzTUDDzbJT6COm8NqmY9dX4iVszagcmb7srqeoD31S2e
     test:
       email: test@gmail.com
-      name: Test Test
-      password: test
-cookie: 
-  expiry_days: 30
-  key: random_signature_key # Must be string
-  name: random_cookie_name
+      failed_login_attempts: 0
+      logged_in: false
+      name: JONATAS CARMESIM
+      password: $2b$12$tMGLoXerQt45bsY9TeKleeuDuTTSjIUKR5/I9Uui0Tim9bFrzXy/a
 preauthorized:
   emails:
   - melsby@gmail.com
