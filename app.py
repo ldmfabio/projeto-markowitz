@@ -1,68 +1,40 @@
 import streamlit as st
-import streamlit_authenticator as stauth
+from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 import yaml
 from yaml.loader import SafeLoader
+from utils import init_session, verify_user
 
 def main():
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
+    init_session()
+    verify_user()
+    st.set_page_config(
+        page_title="Página Inicial", 
+        page_icon="🌎", 
+        layout="wide", 
+        initial_sidebar_state="collapsed"
+    )  
 
-    authenticator = stauth.Authenticate(
-        config['credentials'],
-        config['cookie']['name'],
-        config['cookie']['key'],
-        config['cookie']['expiry_days'],
-        config['preauthorized']
-    )
+    col1, col2, col3 = st.columns([1, .2, 5])
 
-    authenticator.login()
+    with col1:
+        st.divider()
+        st.page_link("app.py", label="Página Inicial", icon="🌎")
+        st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
+        st.page_link("pages/wallets.py", label="Carteiras", icon="💼")
+        st.page_link("pages/user.py", label="Perfil", icon="👾")
+        st.divider()
+    with col3:
+        # Carregar as credenciais do arquivo YAML e instanciar o objeto de autenticação
+        with open('./config.yaml') as file:
+            config = yaml.load(file, Loader=SafeLoader)
+        auth_handler = AuthenticationHandler(credentials=config['credentials'])
 
-    if st.session_state["authentication_status"]:
-        try:
-            if authenticator.reset_password(st.session_state["username"]):
-                with open('./config.yaml', 'w') as file:
-                    yaml.dump(config, file, default_flow_style=False)
-                st.success('Password modified successfully')
-        except Exception as e:
-            st.error(e)
+        st.title("ModernMKZ")
 
-    try:
-        email_of_registered_user, username_of_registered_user, name_of_registered_user = authenticator.register_user(pre_authorization=False)
-        if email_of_registered_user:
-            with open('./config.yaml', 'w') as file:
-                yaml.dump(config, file, default_flow_style=False)
-            st.success('User registered successfully')
-    except Exception as e:
-        st.error(e)
+        st.write('''
+            Lorem Ipsum é simplesmente uma simulação de texto da indústria tipográfica e de impressos, e vem sendo utilizado desde o século XVI, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos de tipos. Lorem Ipsum sobreviveu não só a cinco séculos, como também ao salto para a editoração eletrônica, permanecendo essencialmente inalterado. Se popularizou na década de 60, quando a Letraset lançou decalques contendo passagens de Lorem Ipsum, e mais recentemente quando passou a ser integrado a softwares de editoração eletrônica como Aldus PageMaker.
+        ''')
+    
 
-    try:
-        username_of_forgotten_password, email_of_forgotten_password, new_random_password = authenticator.forgot_password()
-        if username_of_forgotten_password:
-            st.success('New password to be sent securely')
-            # The developer should securely transfer the new password to the user.
-        elif username_of_forgotten_password == False:
-            st.error('Username not found')
-    except Exception as e:
-        st.error(e)
-
-    try:
-        username_of_forgotten_username, email_of_forgotten_username = authenticator.forgot_username()
-        if username_of_forgotten_username:
-            st.success('Username to be sent securely')
-            # The developer should securely transfer the username to the user.
-        elif username_of_forgotten_username == False:
-            st.error('Email not found')
-    except Exception as e:
-        st.error(e)
-
-    if st.session_state["authentication_status"]:
-        try:
-            if authenticator.update_user_details(st.session_state["username"]):
-                with open('./config.yaml', 'w') as file:
-                    yaml.dump(config, file, default_flow_style=False)
-                st.success('Entries updated successfully')
-        except Exception as e:
-            st.error(e)
-                
 if __name__ == "__main__":
     main()
