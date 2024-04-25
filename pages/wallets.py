@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from utils import init_session, verify_user
 
 def main(): 
@@ -11,7 +12,7 @@ def main():
         initial_sidebar_state="collapsed"
     )
 
-    col1, col2 = st.columns([1, 4])
+    col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
         st.divider()
@@ -20,26 +21,44 @@ def main():
         st.page_link("pages/wallets.py", label="Carteiras", icon="💼")
         st.page_link("pages/user.py", label="Perfil", icon="👾")
         st.divider()
-        if st.button('Adicionar Carteira', type='primary', use_container_width=True):
+        if st.button('Adicionar Carteira', type="primary",use_container_width=True):
             st.session_state.showResult = True
-    with col2:
+    with col3:
         st.title("Suas Carteiras")
-        st.caption("""<p style='font-size: 1.4em; max-width: 900px'>
-            Você pode se perguntar por que um designer optaria por usar o texto lorem ipsum em vez de alguns parágrafos em seu idioma nativo. 
+        st.caption("""<p style='font-size: 1.4em; max-width: 900px; padding: 0 0 1em 0'>
+            Você pode se perguntar por que um designer optaria por usar o texto lorem ipsum em vez de alguns parágrafos em seu idioma nativo.
         </p>""", unsafe_allow_html=True)
-    
-        for i in st.session_state.wallets:
-            st.divider()
-            cols = st.columns(2)
-            cols[0].markdown(f"**Nome:** {i['name']}")
-            cols[1].markdown(f"**Descrição:** {i['description']}")
-            for j in i['stocks']:
-                cols = st.columns(4)
-                cols[0].markdown(f"**Nome:** {j['name']}")
-                cols[1].markdown(f"**Descrição:** {j['description']}")
-                cols[2].markdown(f"**Quantidade:** {j['quantity']}")
-                cols[3].markdown(f"**Preço:** {j['price']}")
-            st.write('---')
+
+        n_rows = len(st.session_state.wallets) / 3
+        col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
+
+        st.session_state.wallets = st.session_state.wallets[::-1]
+
+        with col2_3:
+            for i in range(int(n_rows))[::-1]:
+                container = st.container(border=True)
+                container.markdown(f"##### **{st.session_state.wallets[i]['name']}**")
+                for j in range(len(st.session_state.wallets[i]['stocks'])):
+                    container.markdown(f"- {st.session_state.wallets[i]['stocks'][j]['name']}")
+                container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True)
+                st.write("")
+        with col2_2:
+            for i in range(int(n_rows), int(n_rows * 2))[::-1]:
+                container = st.container(border=True)
+                container.markdown(f"##### **{st.session_state.wallets[i]['name']}**")
+                for j in range(len(st.session_state.wallets[i]['stocks'])):
+                    container.markdown(f"- {st.session_state.wallets[i]['stocks'][j]['name']}")
+                container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True)
+                st.write("")
+        with col2_1:
+            for i in range(int(n_rows * 2), len(st.session_state.wallets))[::-1]:
+                container = st.container(border=True)
+                container.markdown(f"##### **{st.session_state.wallets[i]['name']}**")
+                for j in range(len(st.session_state.wallets[i]['stocks'])):
+                    container.markdown(f"- {st.session_state.wallets[i]['stocks'][j]['name']}")
+                container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True)
+                st.write("")
+                            
 
 if __name__ == "__main__":
     main()

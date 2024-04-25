@@ -10,6 +10,12 @@ credentials:
       logged_in: false
       name: Mateus
       password: $2b$12$hR6Y1krttRPOx8WALPZVOemQYU3WheNUfohRurT6/sthZ5I1PL6Ja
+    mateus:
+      email: admin2@admin.com
+      failed_login_attempts: 0
+      logged_in: false
+      name: Mateus
+      password: $2b$12$hR6Y1krttRPOx8WALPZVOemQYU3WheNUfohRurT6/sthZ5I1PL6Ja
 preauthorized:
   emails:
   - admin@gmail.com

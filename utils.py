@@ -24,37 +24,56 @@ def init_session():
     st.session_state.wallets = st.session_state.get('wallets', [
         {
             "name": "Carteira 1",
-            "description": "Descrição da Carteira 1",
             "stocks": [
                 {
                     "name": "Ação 1",
-                    "description": "Descrição da Ação 1",
-                    "quantity": 10,
-                    "price": 100.00
                 },
                 {
                     "name": "Ação 2",
-                    "description": "Descrição da Ação 2",
-                    "quantity": 20,
-                    "price": 200.00
                 }
             ]
         },
         {
             "name": "Carteira 2",
-            "description": "Descrição da Carteira 2",
             "stocks": [
                 {
                     "name": "Ação 3",
-                    "description": "Descrição da Ação 3",
-                    "quantity": 30,
-                    "price": 300.00
                 },
                 {
                     "name": "Ação 4",
-                    "description": "Descrição da Ação 4",
-                    "quantity": 40,
-                    "price": 400.00
+                }
+            ]
+        },
+        {
+            "name": "Carteira 3",
+            "stocks": [
+                {
+                    "name": "Ação 5",
+                },
+                {
+                    "name": "Ação 6",
+                }
+            ]
+        },
+        {
+            "name": "Carteira 4",
+            "stocks": [
+                {
+                    "name": "Ação 7",
+                },
+                {
+                    "name": "Ação 8",
+                }
+            ]
+        },
+        {
+            "name": "Carteira 5",
+            "stocks": [
+                {
+                    "name": "Ação 9",
+                },
+                {
+                    "name": "Ação 10",
                 }
             ]
         }
