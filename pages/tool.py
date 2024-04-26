@@ -22,26 +22,26 @@ def main():
         # st.write("Menu de Navegação")
         st.page_link("app.py", label="Página Inicial", icon="🌎")
         st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/wallets.py", label="Carteiras", icon="💼")
+        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
         st.page_link("pages/user.py", label="Perfil", icon="👾")
 
         st.divider()
 
-        wallets = [
+        portfolios = [
                 {
-                    'title': 'Wallet 1'
+                    'title': 'portfolio1'
                 },
                 {
-                    'title': 'Wallet 2'
+                    'title': 'portfolio2'
                 },
             ]
 
-        wallet_titles = [wallet['title'] for wallet in wallets]
+        portfolio_titles = [portfolio['title'] for portfolio in portfolios]
 
         st.write("Carteiras Cadastradas")
-        wallet = st.selectbox(
+        portfolio= st.selectbox(
             label="Selecione uma Carteira",
-            options=wallet_titles,
+            options=portfolio_titles,
             placeholder='Selecione uma Carteira',
             label_visibility='collapsed',
         )

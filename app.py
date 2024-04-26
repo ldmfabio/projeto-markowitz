@@ -20,7 +20,7 @@ def main():
         st.divider()
         st.page_link("app.py", label="Página Inicial", icon="🌎")
         st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/wallets.py", label="Carteiras", icon="💼")
+        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
         st.page_link("pages/user.py", label="Perfil", icon="👾")
         st.divider()
     with col3:
@@ -44,6 +44,7 @@ def main():
         with col2:
             st.image('./assets/img/logo-fabrica.png')
         st.write("*Versão 1.0.3*")
+
     
 
 if __name__ == "__main__":

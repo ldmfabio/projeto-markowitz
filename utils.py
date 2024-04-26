@@ -20,67 +20,28 @@ def init_session():
     st.session_state.new_email = st.session_state.get('new_email', None)
     # tool
     st.session_state.showResult = st.session_state.get('showResult', False)
-    # wallets
-    st.session_state.wallets = st.session_state.get('wallets', [
-        {
-            "name": "Carteira 1",
-            "stocks": [
-                {
-                    "name": "Ação 1",
-                },
-                {
-                    "name": "Ação 2",
-                }
-            ]
-        },
-        {
-            "name": "Carteira 2",
-            "stocks": [
-                {
-                    "name": "Ação 3",
-                },
-                {
-                    "name": "Ação 4",
-                }
-            ]
-        },
-        {
-            "name": "Carteira 3",
-            "stocks": [
-                {
-                    "name": "Ação 5",
-                },
-                {
-                    "name": "Ação 6",
-                }
-            ]
-        },
-        {
-            "name": "Carteira 4",
-            "stocks": [
-                {
-                    "name": "Ação 7",
-                },
-                {
-                    "name": "Ação 8",
-                }
-            ]
-        },
-        {
-            "name": "Carteira 5",
-            "stocks": [
-                {
-                    "name": "Ação 9",
-                },
-                {
-                    "name": "Ação 10",
-                }
-            ]
-        }
-    ])
-    st.session_state.wallet_name = st.session_state.get('wallet_name', None)
-    st.session_state.wallet_description = st.session_state.get('wallet_description', None)
+    # portfolios
+    st.session_state.portfolios = st.session_state.get('portfolios', [])
 
 def verify_user():
     if st.session_state.get('authentication_status') != True:
         st.switch_page("pages/user.py")
+
+def display_portfolios(portfolios, session_state):
+    n_rows = len(portfolios) / 3
+    col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
+    
+    def display_portfolio_column(start_idx, end_idx, column):
+        for i in range(start_idx, end_idx):
+            container = column.container(border=True)
+            container.markdown(f"##### **{portfolios[i]['name']}**")
+            for j in range(len(portfolios[i]['stocks'])):
+                container.markdown(f"- {portfolios[i]['stocks'][j]}")
+            if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True):
+                session_state.portfolios_edit = portfolios[i]
+                st.switch_page("pages/edit_portfolio.py")
+            st.write("")
+
+    display_portfolio_column(0, int(n_rows), col2_3)
+    display_portfolio_column(int(n_rows), int(n_rows * 2), col2_2)
+    display_portfolio_column(int(n_rows * 2), len(portfolios), col2_1)
