@@ -1,6 +1,13 @@
 import streamlit as st
 import pandas as pd
 from utils import init_session, verify_user
+import time
+
+def loader(text):
+    text = text + '...'
+    with st.spinner(text):
+        time.sleep(1)
+    # fazer um toast no futuro
 
 def main(): 
     init_session()
@@ -16,24 +23,28 @@ def main():
 
     with col1:
         st.divider()
-        st.page_link("app.py", label="Página Inicial", icon="🌎")
-        st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", label="Perfil", icon="👾")
+        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
+        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
+        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
+        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
         st.divider() 
     with col3:
         st.title(f"Editar Carteira: {st.session_state.portfolios_edit['name']}")
-        name_portfolio = st.text_input(
+        cols1 = st.columns([4,1])
+        name_portfolio = cols1[0].text_input(
             key=f"portfolio_{st.session_state.portfolios.index(st.session_state.portfolios_edit)}",
             value=st.session_state.portfolios_edit['name'],
-            label="Nome da Carteira"
+            label="Nome da Carteira",
         )
+        number = cols1[1].number_input('Digite o número de', step=1, max_value=5,  min_value=1, value=len(st.session_state.portfolios_edit['stocks']))
+
         stocks = []
-        for j in range(len(st.session_state.portfolios_edit['stocks'])):
+        for j in range(number):
+            value = st.session_state.portfolios_edit['stocks'][j] if j < len(st.session_state.portfolios_edit['stocks']) else ""
             stock = st.text_input(
                 key=f"stock_{j}",
-                value=st.session_state.portfolios_edit['stocks'][j],
-                label=f"Nome da Ação {j+1}"
+                value=value,
+                label=f"Nome da Ação {j+1}",
             )
             stocks.append(stock)
 
@@ -45,19 +56,24 @@ def main():
                     return False
             return True
 
-        if st.button("Salvar Alterações", key="save"):
+        
+        cols2 = st.columns([1,2])
+
+        if cols2[1].button("Salvar Alterações", key="save", use_container_width=True, type="primary"):
+            loader('Salvando Alterações')
             if validar_form():
                 st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)] = {
                     "name": name_portfolio,
                     "stocks": stocks
                 }
-                st.success('Adicionado com sucesso', icon="✅")
+                st.switch_page("pages/portfolio.py")
             else:
                 st.warning("Preencha todos os campos", icon="⚠️")
 
-        if st.button("Excluir Carteira", key="delete"):
+        if cols2[0].button("Excluir Carteira", key="delete", use_container_width=True, type="secondary"):
+            loader('Excluindo Carteira')
             st.session_state.portfolios.remove(st.session_state.portfolios_edit)
-            st.success('Excluído com sucesso', icon="✅")
+            st.switch_page("pages/portfolio.py")
 
 if __name__ == "__main__":
     main()

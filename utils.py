@@ -1,4 +1,7 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
+from streamlit_echarts import st_echarts
 
 def init_session():
     # auth
@@ -21,7 +24,9 @@ def init_session():
     # tool
     st.session_state.showResult = st.session_state.get('showResult', False)
     # portfolios
-    st.session_state.portfolios = st.session_state.get('portfolios', [])
+    st.session_state.disable = False
+    st.session_state.portfolios = st.session_state.get('portfolios', [{"name": "Carteira 1", "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]}])
+    st.session_state.test = st.session_state.get('test', None)
 
 def verify_user():
     if st.session_state.get('authentication_status') != True:
@@ -31,17 +36,79 @@ def display_portfolios(portfolios, session_state):
     n_rows = len(portfolios) / 3
     col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
     
-    def display_portfolio_column(start_idx, end_idx, column):
-        for i in range(start_idx, end_idx):
+    def display_portfolio_column(start, end, column):
+        for i in range(start, min(end, len(portfolios))):
             container = column.container(border=True)
-            container.markdown(f"##### **{portfolios[i]['name']}**")
+            container.write(f"##### {portfolios[i]['name']}")
             for j in range(len(portfolios[i]['stocks'])):
                 container.markdown(f"- {portfolios[i]['stocks'][j]}")
             if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True):
-                session_state.portfolios_edit = portfolios[i]
+                st.session_state.portfolios_edit = st.session_state.portfolios[i]
                 st.switch_page("pages/edit_portfolio.py")
             st.write("")
 
-    display_portfolio_column(0, int(n_rows), col2_3)
-    display_portfolio_column(int(n_rows), int(n_rows * 2), col2_2)
-    display_portfolio_column(int(n_rows * 2), len(portfolios), col2_1)
+    display_portfolio_column(0, int(n_rows + 1), col2_1)
+    display_portfolio_column(int(n_rows + 1), (int(n_rows * 2)  + 1), col2_2)
+    display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
+
+def display_results(datas):
+    df = pd.DataFrame(datas)
+    col1, col2, col3 = st.columns((1, .2, 1))
+    with col1:
+        x = datas["Ações"]
+        x1 = datas["Porcentagem de Risco"]
+        option = {
+            "legend": {
+                "grid": {
+                    "left": "2%",
+                },
+            },
+            "tooltip": {},
+            "yAxis": { 
+                "type": 'category',
+                "axisTick": { "show": False },
+                "data": datas["Ações"],
+            },
+            "xAxis": {
+                "type": 'value',
+            },
+            "grid": {
+                "left": '3%',
+                "right": '4%',
+                "bottom": '0%',
+                "containLabel": True
+            },
+            "series": [
+                { 
+                    "type": 'bar',
+                    "data": datas["Porcentagem de Risco"],
+                    "label": {
+                        "show": True,
+                        "position": "inside",
+                        "distance": 25,
+                        "align": "center",
+                        "verticalAlign": "middle",
+                        "rotate": 0,
+                        "formatter": '{c} %',
+                        "fontSize": 16,
+                        "rich": {
+                            "name": {}
+                        }
+                    },
+                }
+            ],
+        }
+
+        # st_echarts(options=option, height="500px")
+        
+        df['Porcentagem de Risco'] = df['Porcentagem de Risco'].apply(lambda x: f"{x}%")
+        st.table(df)
+        
+    with col3:
+        st.write("gráfico 2")
+        data = {
+            'x': datas["Ações"],
+            'y': datas["Porcentagem de Risco"]
+        }
+        df = pd.DataFrame(data)
+        st.bar_chart(df)

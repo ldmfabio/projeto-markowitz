@@ -16,10 +16,10 @@ def main():
 
     with col1:
         st.divider()
-        st.page_link("app.py", label="Página Inicial", icon="🌎")
-        st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", label="Perfil", icon="👾")
+        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
+        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
+        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
+        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
         st.divider() 
     with col3:
         st.title("Adicionar Carteira")

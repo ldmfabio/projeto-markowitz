@@ -17,19 +17,20 @@ def main():
 
     with col1:
         st.divider()
-        st.page_link("app.py", label="Página Inicial", icon="🌎")
-        st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", label="Perfil", icon="👾")
+        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
+        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
+        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
+        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
         st.divider()
-        st.page_link("pages/add_portfolio.py", label="Adicionar Carteira", icon="➕")
+        if st.button("Adicionar Carteira", key="add_portfolio", type="primary", use_container_width=True):
+            st.switch_page("pages/add_portfolio.py")
     with col3:
         st.title("Suas Carteiras")
-        st.caption("""<p style='font-size: 1.4em; max-width: 900px; padding: 0 0 1em 0'>
-            Você pode se perguntar por que um designer optaria por usar o texto lorem ipsum em vez de alguns parágrafos em seu idioma nativo.
-        </p>""", unsafe_allow_html=True)
 
-        display_portfolios(st.session_state.portfolios, st.session_state)
+        if st.session_state.portfolios == []:
+            st.caption("## Você ainda não possui nenhuma carteira cadastrada.")
+        else:
+            display_portfolios(st.session_state.portfolios, st.session_state)
                             
 
 if __name__ == "__main__":

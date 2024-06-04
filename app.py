@@ -1,51 +1,70 @@
 import streamlit as st
-from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
-import yaml
-from yaml.loader import SafeLoader
-from utils import init_session, verify_user
 
-def main():
+import pandas as pd
+# import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+from utils import init_session, verify_user, display_results
+from test import get_graph
+
+def main(): 
     init_session()
     verify_user()
     st.set_page_config(
-        page_title="Página Inicial", 
-        page_icon="🌎", 
+        page_title="Ferramenta", 
+        page_icon="📉", 
         layout="wide", 
         initial_sidebar_state="collapsed"
-    )  
+    )
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
         st.divider()
-        st.page_link("app.py", label="Página Inicial", icon="🌎")
-        st.page_link("pages/tool.py", label="Ferramenta", icon="📉")
-        st.page_link("pages/portfolio.py", label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", label="Perfil", icon="👾")
+        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
+        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
+        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
+        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
         st.divider()
+        disabled = False
+        if len(st.session_state.portfolios) > 0:
+            portfolio_titles = [portfolio['name'] for portfolio in st.session_state.portfolios]
+        else:
+            portfolio_titles = ['Nenhuma Carteira Cadastrada']
+        st.write("Carteiras Cadastradas")
+        portfolio= st.selectbox(
+            label="Selecione uma Carteira",
+            options=portfolio_titles,
+            placeholder='Selecione uma Carteira',
+            label_visibility='collapsed',
+            disabled=len(st.session_state.portfolios) == 0,
+        )
+
+        st.write("Selecione o período de tempo:")
+        # Radio buttons para 3 e 5 anos
+        time_period = st.radio(
+            "Selecione o período de tempo:",
+            ('3 anos', '5 anos'),
+            label_visibility='collapsed',
+        )
+        
+        if st.button('Fazer Busca', type='primary', use_container_width=True):
+            st.session_state.showResult = True
+
+            n = 0
+            selected_portfolio = next((portfolio for portfolio in st.session_state.portfolios if portfolio['name'] == st.session_state.portfolios[n]['name']), None)
+            
+            st.session_state.test = get_graph(time_period, selected_portfolio["stocks"])
+
     with col3:
-        # Carregar as credenciais do arquivo YAML e instanciar o objeto de autenticação
-        with open('./config.yaml') as file:
-            config = yaml.load(file, Loader=SafeLoader)
-        auth_handler = AuthenticationHandler(credentials=config['credentials'])
-
         st.title("ModernMKZ")
+        if st.session_state.get('showResult'):
+            st.caption(f"## Você selecionou a carteira {portfolio} e o período de {time_period}")
+            if st.session_state.test:
+                display_results(st.session_state.test)
+        else:
+            st.caption("## Selecione uma carteira e um período de tempo para visualizar os resultados.")
 
-        st.write('''
-            Lorem Ipsum é simplesmente uma simulação de texto da indústria tipográfica e de impressos, e vem sendo utilizado desde o século XVI, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos de tipos. Lorem Ipsum sobreviveu não só a cinco séculos, como também ao salto para a editoração eletrônica, permanecendo essencialmente inalterado. Se popularizou na década de 60, quando a Letraset lançou decalques contendo passagens de Lorem Ipsum, e mais recentemente quando passou a ser integrado a softwares de editoração eletrônica como Aldus PageMaker.
-        ''')
-        st.write('#')
-
-        col1, col2, col3 = st.columns(3, gap="large")
-
-        with col1:
-            st.image('./assets/img/logo-ifc.png', width=300)
-
-        with col2:
-            st.image('./assets/img/logo-fabrica.png')
-        st.write("*Versão 1.0.3*")
-
-    
-
+            
+           
 if __name__ == "__main__":
     main()
