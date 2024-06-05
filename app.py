@@ -1,14 +1,12 @@
 import streamlit as st
+from manager.user_manager import UserManager
+from manager.app_manager import AppManager
 
-import pandas as pd
-# import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
-from utils import init_session, verify_user, display_results
-from test import get_graph
+def main():
+    user_manager = UserManager()
+    app_manager = AppManager()
+    user_manager.verify_user()
 
-def main(): 
-    init_session()
-    verify_user()
     st.set_page_config(
         page_title="Ferramenta", 
         page_icon="📉", 
@@ -53,18 +51,18 @@ def main():
             n = 0
             selected_portfolio = next((portfolio for portfolio in st.session_state.portfolios if portfolio['name'] == st.session_state.portfolios[n]['name']), None)
             
-            st.session_state.test = get_graph(time_period, selected_portfolio["stocks"])
+            st.session_state.test = app_manager.run(time_period, selected_portfolio["stocks"])
+
+            st.write(selected_portfolio["stocks"])
 
     with col3:
         st.title("ModernMKZ")
         if st.session_state.get('showResult'):
-            st.caption(f"## Você selecionou a carteira {portfolio} e o período de {time_period}")
+            st.caption(f"Você selecionou a carteira {portfolio} e o período de {time_period}")
             if st.session_state.test:
-                display_results(st.session_state.test)
+                app_manager.display_results(st.session_state.test)
         else:
             st.caption("## Selecione uma carteira e um período de tempo para visualizar os resultados.")
 
-            
-           
 if __name__ == "__main__":
     main()
