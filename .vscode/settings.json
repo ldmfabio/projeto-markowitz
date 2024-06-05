@@ -7,5 +7,8 @@
   ],
   "python.autoComplete.extraPaths": [
     "${workspaceFolder}/__pypackages__/3.11/lib"
+  ],
+  "conventionalCommits.scopes": [
+    "main"
   ]
 }

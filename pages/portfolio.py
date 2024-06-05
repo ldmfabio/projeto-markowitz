@@ -1,11 +1,11 @@
 import streamlit as st
 import pandas as pd
-from utils import init_session, verify_user, display_portfolios
-
-
+from manager.user_manager import UserManager
+from manager.app_manager import AppManager
 def main(): 
-    init_session()
-    verify_user()
+    user_manager = UserManager()
+    app_manager = AppManager()
+    user_manager.verify_user()
     st.set_page_config(
         page_title="Carteiras", 
         page_icon="💼", 
@@ -30,7 +30,7 @@ def main():
         if st.session_state.portfolios == []:
             st.caption("## Você ainda não possui nenhuma carteira cadastrada.")
         else:
-            display_portfolios(st.session_state.portfolios, st.session_state)
+            app_manager.display_portfolios(st.session_state.portfolios)
                             
 
 if __name__ == "__main__":

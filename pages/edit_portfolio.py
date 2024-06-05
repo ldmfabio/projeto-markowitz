@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from utils import init_session, verify_user
+from manager.user_manager import UserManager
 import time
 
 def loader(text):
@@ -9,9 +9,9 @@ def loader(text):
         time.sleep(1)
     # fazer um toast no futuro
 
-def main(): 
-    init_session()
-    verify_user()
+def main():
+    user_manager = UserManager()
+    user_manager.verify_user()
     st.set_page_config(
         page_title="Adicionar Carteira", 
         page_icon="➕", 

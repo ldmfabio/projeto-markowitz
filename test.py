@@ -1,9 +1,4 @@
-import yfinance as yf
-import numpy as np
-import plotly.graph_objects as go
-import cvxopt as opt
-import os
-import json
+
 
 def get_graph(start_date, stocks): 
     np.random.seed(777)

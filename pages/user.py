@@ -2,10 +2,10 @@ import streamlit as st
 from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 import yaml
 from yaml.loader import SafeLoader
-from utils import init_session
+from manager.user_manager import UserManager
 
 def main():
-    init_session()
+    user_manager = UserManager()
     st.set_page_config(
         page_title="Perfil", 
         page_icon="👾", 
@@ -108,7 +108,8 @@ def main():
                         st.error(f"{e}")
 
             else:
-                st.error("Nome de usuário não encontrado.")
+                st.error("Erro ao encotrar usuário, por favor reinicie a página.")
+
 
 if __name__ == "__main__":
     main()
