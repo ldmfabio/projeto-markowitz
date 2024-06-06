@@ -57,12 +57,18 @@ def main():
 
     with col3:
         st.title("ModernMKZ")
+        st.caption("Ferramenta de Análise de Carteiras de Ações")
         if st.session_state.get('showResult'):
+
             st.caption(f"Você selecionou a carteira {portfolio} e o período de {time_period}")
             if st.session_state.test:
                 app_manager.display_results(st.session_state.test)
         else:
-            st.caption("## Selecione uma carteira e um período de tempo para visualizar os resultados.")
+            st.markdown(
+                '<div style="margin-top: 1em; display: flex; justify-content: center; align-items: center; width: 100%; padding: 5em"><div style="text-align: center; color: #bbb"><svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none"><g clip-path="url(#clip0_17_12)"><path d="M72 24L60.36 49.04L81.36 70.04C85.56 63.72 88 56.16 88 48C88 25.92 70.08 8 48 8C39.84 8 32.28 10.44 25.96 14.64L46.96 35.64L72 24ZM11.24 22.56L14.64 25.96C9.16001 34.24 6.64001 44.68 8.72001 55.76C11.72 71.56 24.4 84.28 40.24 87.28C51.32 89.36 61.76 86.88 70.04 81.36L73.44 84.76C75 86.32 77.52 86.32 79.08 84.76C80.64 83.2 80.64 80.68 79.08 79.12L16.88 16.88C15.32 15.32 12.8 15.32 11.24 16.88C9.68001 18.44 9.68001 21 11.24 22.56ZM35.64 46.96L49.04 60.36L24 72L35.64 46.96Z" fill="#bbb"/></g><defs><clipPath id="clip0_17_12"><rect width="96" height="96" fill="white"/></clipPath></defs></svg><p style="margin-top: 1em">Selecione uma carteira e um período de tempo para visualizar os resultados.</p></div></div>',
+                unsafe_allow_html=True
+            )
 
+            
 if __name__ == "__main__":
     main()
