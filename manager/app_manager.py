@@ -46,8 +46,6 @@ class AppManager:
         
         col1, col2, col3 = container_one.columns((1, 1, 1))
 
-        st.write("Resultados")
-
         with col1:
             container = st.container(border=True)
             container.markdown(f"<span style='color: black; font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
@@ -66,69 +64,138 @@ class AppManager:
             for i in range(len(datas[3])):
                 container.markdown(f"- {datas[3][i]}")
 
-        st.write(datas)
+        df_pr = pd.DataFrame(
+            {
+                "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
+                "Porcentagem de Risco": [float(datas[1][i].split(": ")[1].replace("%", "")) for i in range(len(datas[1]))]
+            }
+        )
+        df_mr = pd.DataFrame(
+                {
+                    "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
+                    "Melhor Relação Risco/Retorno": [float(datas[1][i].split(": ")[1].replace("%", "")) for i in range(len(datas[1]))]
+                }
+            )
 
-        # df = pd.DataFrame(datas)
-        # col1, col2, col3 = st.columns((1, .2, 1))
-        # with col1:
-        #     x = datas["Ações"]
-        #     x1 = datas["Porcentagem de Risco"]
-        #     option = {
-        #         "legend": {
-        #             "grid": {
-        #                 "left": "2%",
-        #             },
-        #         },
-        #         "tooltip": {},
-        #         "yAxis": { 
-        #             "type": 'category',
-        #             "axisTick": { "show": False },
-        #             "data": datas["Ações"],
-        #         },
-        #         "xAxis": {
-        #             "type": 'value',
-        #         },
-        #         "grid": {
-        #             "left": '3%',
-        #             "right": '4%',
-        #             "bottom": '0%',
-        #             "containLabel": True
-        #         },
-        #         "series": [
-        #             { 
-        #                 "type": 'bar',
-        #                 "data": datas["Porcentagem de Risco"],
-        #                 "label": {
-        #                     "show": True,
-        #                     "position": "inside",
-        #                     "distance": 25,
-        #                     "align": "center",
-        #                     "verticalAlign": "middle",
-        #                     "rotate": 0,
-        #                     "formatter": '{c} %',
-        #                     "fontSize": 16,
-        #                     "rich": {
-        #                         "name": {}
-        #                     }
-        #                 },
-        #             }
-        #         ],
-        #     }
-
-        #     st_echarts(options=option, height="500px")
-            
-        #     df['Porcentagem de Risco'] = df['Porcentagem de Risco'].apply(lambda x: f"{x}%")
-        #     st.table(df)
-            
-        # with col3:
-        #     st.write("gráfico 2")
-        #     data = {
-        #         'x': datas["Ações"],
-        #         'y': datas["Porcentagem de Risco"]
-        #     }
-        #     df = pd.DataFrame(data)
-        #     st.bar_chart(df)
+        return [df_pr, df_mr]
         
+    def show_example_graphs(self, df_pr, df_mr):
+        st.title("Exemplo de Possíveis Vizualizações dos Dados")    
+        
+        option = {
+            "title": {
+                "text": "Ações X Menor Risco",
+                "subtext": "Exemplo de Possíveis Vizualizações dos Dados",
+                "top": "top",
+                "textStyle": {
+                    "color": "#333",
+                    "fontSize": 20,
+                },
+                "subtextStyle": {
+                    "color": "#aaa",
+                    "fontSize": 16,
+                }
+            },
+            "legend": {
+                "grid": {
+                    "left": "2%",
+                },
+            },
+            "tooltip": {},
+            "yAxis": { 
+                "type": 'category',
+                "axisTick": { "show": False },
+                "data": df_pr["Ações"].tolist(),
+            },
+            "xAxis": {
+                "type": 'value',
+            },
+            "grid": {
+                "top": "15%",
+                "left": '3%',
+                "right": '4%',
+                "bottom": '0%',
+                "containLabel": True
+            },
+            "series": [
+                { 
+                    "type": 'bar',
+                    "data": df_pr["Porcentagem de Risco"].tolist(),
+                    "label": {
+                        "show": True,
+                        "position": "inside",
+                        "distance": 25,
+                        "align": "center",
+                        "verticalAlign": "middle",
+                        "rotate": 0,
+                        "formatter": '{c} %',
+                        "fontSize": 16,
+                        "rich": {
+                            "name": {}
+                        }
+                    },
+                }
+            ],
+        }
+        st_echarts(options=option, height="500px")
+
+        option = {
+            "title": {
+                "text": "Ações X Melhor Relação Risco/Retorno",
+                "subtext": "Exemplo de Possíveis Vizualizações dos Dados",
+                "top": "top",
+                "textStyle": {
+                    "color": "#333",
+                    "fontSize": 20,
+                },
+                "subtextStyle": {
+                    "color": "#aaa",
+                    "fontSize": 16,
+                }
+            },
+            "legend": {
+                "grid": {
+                    "left": "2%",
+                },
+            },
+            "tooltip": {},
+            "yAxis": { 
+                "type": 'value',
+            },
+            "xAxis": {
+                "type": 'category',
+                "axisTick": { "show": False },
+                "data": df_mr["Ações"].tolist(),
+            },
+            "grid": {
+                "top": "15%",
+                "left": '3%',
+                "right": '4%',
+                "bottom": '0%',
+                "containLabel": True
+            },
+            "series": [
+                { 
+                    "type": 'bar',
+                    "data": df_mr["Melhor Relação Risco/Retorno"].tolist(),
+                    "label": {
+                        "show": True,
+                        "position": "inside",
+                        "distance": 25,
+                        "align": "center",
+                        "verticalAlign": "middle",
+                        "rotate": 0,
+                        "formatter": '{c} %',
+                        "fontSize": 16,
+                        "rich": {
+                            "name": {}
+                        }
+                    },
+                }
+            ],
+        }
+        st_echarts(options=option, height="500px")
+
     def get_selic(self):
         try:
             # URL Banco Central do Brasil API - dados da SELIC
@@ -157,6 +224,11 @@ class AppManager:
 
         start_date = '2022-01-01'
         end_date = '2023-01-01'
+
+        print("===========================================")
+        print("Iniciando a análise de carteira de ações...")
+        print(f"Carteira de ações selecionada: {stocks}")
+        print("===========================================")
 
         table = yf.download(stocks, start=start_date, end=end_date)['Adj Close']
 
@@ -300,8 +372,5 @@ class AppManager:
             yaxis=dict(title='Retorno'),
             showlegend=True,
         )
-
-        data = fig.to_json()
-        data = json.loads(data)
         
-        return [data, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
+        return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
