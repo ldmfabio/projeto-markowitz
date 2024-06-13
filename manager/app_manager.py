@@ -39,31 +39,6 @@ class AppManager:
         display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
 
     def display_results(self, datas):
-
-        container_one = st.expander("__Informações Gerais__", expanded=True)
-        container = container_one.container(border=True)
-        container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='color: black; font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
-        
-        col1, col2, col3 = container_one.columns((1, 1, 1))
-
-        with col1:
-            container = st.container(border=True)
-            container.markdown(f"<span style='color: black; font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[1])):
-                container.markdown(f"- {datas[1][i]}")
-                
-        with col2:
-            container = st.container(border=True)
-            container.markdown(f"<span style='color: black; font-weight: 900'>Melhor Relação Risco/Retorno:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[2])):
-                container.markdown(f"- {datas[2][i]}")
-
-        with col3:
-            container = st.container(border=True)
-            container.markdown(f"<span style='color: black; font-weight: 900'>Risco Definido:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[3])):
-                container.markdown(f"- {datas[3][i]}")
-
         df_pr = pd.DataFrame(
             {
                 "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
@@ -71,30 +46,29 @@ class AppManager:
             }
         )
         df_mr = pd.DataFrame(
-                {
-                    "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
-                    "Melhor Relação Risco/Retorno": [float(datas[1][i].split(": ")[1].replace("%", "")) for i in range(len(datas[1]))]
-                }
-            )
+            {
+                "Ações": [datas[2][i].split(": ")[0] for i in range(len(datas[2]))],
+                "Melhor Relação Risco/Retorno": [float(datas[2][i].split(": ")[1].replace("%", "")) for i in range(len(datas[2]))]
+            }
+        )
+        df_rd = pd.DataFrame(
+            {
+                "Ações": [datas[3][i].split(": ")[0] for i in range(len(datas[3]))],
+                "Risco Definido": [float(datas[3][i].split(": ")[1].replace("%", "")) for i in range(len(datas[3]))]
+            }
+        )
 
-        return [df_pr, df_mr]
+        return [df_pr, df_mr, df_rd]
         
-    def show_example_graphs(self, df_pr, df_mr):
-        st.title("Exemplo de Possíveis Vizualizações dos Dados")    
-        
+    def show_example_graphs(self, x, y, title):
         option = {
             "title": {
-                "text": "Ações X Menor Risco",
-                "subtext": "Exemplo de Possíveis Vizualizações dos Dados",
+                "text": title,
                 "top": "top",
                 "textStyle": {
                     "color": "#333",
                     "fontSize": 20,
                 },
-                "subtextStyle": {
-                    "color": "#aaa",
-                    "fontSize": 16,
-                }
             },
             "legend": {
                 "grid": {
@@ -105,31 +79,30 @@ class AppManager:
             "yAxis": { 
                 "type": 'category',
                 "axisTick": { "show": False },
-                "data": df_pr["Ações"].tolist(),
+                "data": y.tolist(),
             },
             "xAxis": {
                 "type": 'value',
             },
             "grid": {
-                "top": "15%",
-                "left": '3%',
-                "right": '4%',
+                "top": "10%",
+                "left": '0',
+                "right": '10%',
                 "bottom": '0%',
                 "containLabel": True
             },
             "series": [
                 { 
                     "type": 'bar',
-                    "data": df_pr["Porcentagem de Risco"].tolist(),
+                    "data": x.tolist(),
                     "label": {
                         "show": True,
-                        "position": "inside",
-                        "distance": 25,
-                        "align": "center",
-                        "verticalAlign": "middle",
+                        "position": "right",
+                        "distance": 5,
+                        # "verticalAlign": "middle",
                         "rotate": 0,
                         "formatter": '{c} %',
-                        "fontSize": 16,
+                        "fontSize": 9,
                         "rich": {
                             "name": {}
                         }
@@ -137,64 +110,8 @@ class AppManager:
                 }
             ],
         }
-        st_echarts(options=option, height="500px")
+        st_echarts(options=option, height="400px")
 
-        option = {
-            "title": {
-                "text": "Ações X Melhor Relação Risco/Retorno",
-                "subtext": "Exemplo de Possíveis Vizualizações dos Dados",
-                "top": "top",
-                "textStyle": {
-                    "color": "#333",
-                    "fontSize": 20,
-                },
-                "subtextStyle": {
-                    "color": "#aaa",
-                    "fontSize": 16,
-                }
-            },
-            "legend": {
-                "grid": {
-                    "left": "2%",
-                },
-            },
-            "tooltip": {},
-            "yAxis": { 
-                "type": 'value',
-            },
-            "xAxis": {
-                "type": 'category',
-                "axisTick": { "show": False },
-                "data": df_mr["Ações"].tolist(),
-            },
-            "grid": {
-                "top": "15%",
-                "left": '3%',
-                "right": '4%',
-                "bottom": '0%',
-                "containLabel": True
-            },
-            "series": [
-                { 
-                    "type": 'bar',
-                    "data": df_mr["Melhor Relação Risco/Retorno"].tolist(),
-                    "label": {
-                        "show": True,
-                        "position": "inside",
-                        "distance": 25,
-                        "align": "center",
-                        "verticalAlign": "middle",
-                        "rotate": 0,
-                        "formatter": '{c} %',
-                        "fontSize": 16,
-                        "rich": {
-                            "name": {}
-                        }
-                    },
-                }
-            ],
-        }
-        st_echarts(options=option, height="500px")
 
     def get_selic(self):
         try:
@@ -336,7 +253,7 @@ class AppManager:
             x=[portfolio_min_risk],
             y=[portfolio_min_return],
             mode='markers',
-            marker=dict(size=10, color='red'),
+            marker=dict(size=16, color='red'),
             name='Portfólio de Menor Risco',
         ))
 
@@ -346,6 +263,7 @@ class AppManager:
             y=y,
             mode='lines',
             name='Reta Tangente',
+            line=dict(color='gray', dash='dash'),
         ))
 
         # Ponto da melhor relação risco/retorno (Sharpe)
@@ -353,7 +271,7 @@ class AppManager:
             x=[risk_sharpe],
             y=[returno_sharpe],
             mode='markers',
-            marker=dict(size=10, color='green'),
+            marker=dict(size=16, color='green'),
             name='Portfólio de Melhor Relação Risco/Retorno (Sharpe)',
         ))
 
@@ -362,7 +280,7 @@ class AppManager:
             x=[x0],
             y=[y0],
             mode='markers',
-            marker=dict(size=10, color='blue'),
+            marker=dict(size=16, color='orange'),
             name='Portfólio com Risco Definido',
         ))
 
