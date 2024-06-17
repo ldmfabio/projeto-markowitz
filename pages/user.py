@@ -5,6 +5,8 @@ from yaml.loader import SafeLoader
 from manager.user_manager import UserManager
 import streamlit_authenticator as stauth
 
+from utils import create_navbar
+
 def main():
     user_manager = UserManager()
     user_manager.verify_user()
@@ -30,12 +32,7 @@ def main():
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
-        st.divider()
-        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
-        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
-        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
-        st.divider() 
+        create_navbar()
     with col3:
         name = st.session_state['name']
         username = st.session_state['username']

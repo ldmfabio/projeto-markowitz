@@ -59,7 +59,7 @@ def main():
         
         cols2 = st.columns([1,2])
 
-        if cols2[1].button("Salvar Alterações", key="save", use_container_width=True, type="primary"):
+        if cols2[1].button("Salvar Alterações", key="save", use_container_width=True, type="primary", help="Salva as alterações feitas na carteira"):
             loader('Salvando Alterações')
             if validar_form():
                 st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)] = {
@@ -70,7 +70,7 @@ def main():
             else:
                 st.warning("Preencha todos os campos", icon="⚠️")
 
-        if cols2[0].button("Excluir Carteira", key="delete", use_container_width=True, type="secondary"):
+        if cols2[0].button("Excluir Carteira", key="delete", use_container_width=True, type="secondary", help="Exclui a carteira"):
             loader('Excluindo Carteira')
             st.session_state.portfolios.remove(st.session_state.portfolios_edit)
             st.switch_page("pages/portfolio.py")

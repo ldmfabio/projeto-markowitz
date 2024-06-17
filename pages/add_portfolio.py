@@ -46,7 +46,7 @@ def main():
                     return False
             return True
 
-        if st.button("Adicionar Carteira"):
+        if st.button("Adicionar Carteira", key="add_portfolio", help="Adiciona uma nova carteira"):
             if validar_form():
                 st.session_state.portfolios.append({
                     "name": name_portfolio,

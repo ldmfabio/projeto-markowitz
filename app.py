@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 import altair as alt
 
+from utils import *
+
 def main():
     user_manager = UserManager()
     app_manager = AppManager()
@@ -20,18 +22,14 @@ def main():
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
-    with col1:
-        st.divider()
-        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
-        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
-        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
-        st.divider()
-        disabled = False
+    with col1:      
+        create_navbar(type='tool')
+        st.write("__Opções__")
         if len(st.session_state.portfolios) > 0:
             portfolio_titles = [portfolio['name'] for portfolio in st.session_state.portfolios]
         else:
             portfolio_titles = ['Nenhuma Carteira Cadastrada']
+        
         st.write("Carteiras Cadastradas")
         portfolio= st.selectbox(
             label="Selecione uma Carteira",
@@ -42,7 +40,6 @@ def main():
         )
 
         st.write("Selecione o período de tempo:")
-        # Radio buttons para 3 e 5 anos
         time_period = st.radio(
             "Selecione o período de tempo:",
             ('3 anos', '5 anos'),
@@ -53,8 +50,10 @@ def main():
             st.session_state.showResult = True
             selected_portfolio = next((item for item in st.session_state.portfolios if item['name'] == portfolio), None)
             st.session_state.test = app_manager.run(time_period, selected_portfolio["stocks"])
-
-            
+        
+        st.divider()
+        st.write("")
+        st.image('./assets/img/group3.png', use_column_width=True)
     with col3:
         st.title("ModernMKZ")
         st.caption("Ferramenta de Análise de Carteiras de Ações")

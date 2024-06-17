@@ -19,24 +19,51 @@ class AppManager:
         st.session_state.disable = False
         st.session_state.portfolios = st.session_state.get('portfolios', [{"name": "Carteira 1", "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]}])
     
-    def display_portfolios(self, portfolios):
-        n_rows = len(portfolios) / 3
+    def display_portfolios(self, portfolios, selected_option):
+        """Displays portfolios with filtering based on the selected option.
+
+        Args:
+            portfolios (list): A list of dictionaries representing portfolios.
+            selected_option (str): The selected option for filtering ("Data de Criação", "Alfabético", or "Número de Ações").
+        """
+
+        n_rows = len(portfolios) // 3  # Integer division for cleaner layout
         col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
-        
+
         def display_portfolio_column(start, end, column):
+            """Displays portfolios in a specific column with filtering applied."""
             for i in range(start, min(end, len(portfolios))):
                 container = column.container(border=True)
                 container.write(f"##### {portfolios[i]['name']}")
-                for j in range(len(portfolios[i]['stocks'])):
-                    container.markdown(f"- {portfolios[i]['stocks'][j]}")
-                if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True):
-                    st.session_state.portfolios_edit = st.session_state.portfolios[i]
+                for stock in portfolios[i]['stocks']:
+                    container.markdown(f"- {stock}")
+                if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True, help="Edita a carteira selecionada"):
+                    st.session_state.portfolios_edit = portfolios[i]
                     st.switch_page("pages/edit_portfolio.py")
                 st.write("")
 
-        display_portfolio_column(0, int(n_rows + 1), col2_1)
-        display_portfolio_column(int(n_rows + 1), (int(n_rows * 2)  + 1), col2_2)
-        display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
+        # Display portfolios based on selected option
+        if selected_option == "Data de Criação":
+            try:
+                sorted_portfolios = portfolios
+            except KeyError:
+                st.error("Chave 'created_at' não encontrada nos dados do portfólio.")
+                return
+            display_portfolio_column(0, int(n_rows + 1), col2_1)
+            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
+            display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
+        elif selected_option == "Alfabético":
+            display_portfolio_column(0, int(n_rows + 1), col2_1)
+            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
+            display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
+        elif selected_option == "Número de Ações":
+            sorted_portfolios = sorted(portfolios, key=lambda x: len(x['stocks']), reverse=True)  # Sort by number of stocks (descending)
+            display_portfolio_column(0, int(n_rows + 1), col2_1)
+            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
+            display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
+        else:
+            st.error(f"Opção de filtro inválida: {selected_option}")  # Handle unexpected options
+
 
     def display_results(self, datas):
         df_pr = pd.DataFrame(
@@ -111,7 +138,6 @@ class AppManager:
             ],
         }
         st_echarts(options=option, height="400px")
-
 
     def get_selic(self):
         try:
