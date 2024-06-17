@@ -83,21 +83,21 @@ def main():
                 [df_pr, df_mr, df_rd] = app_manager.display_results(st.session_state.test)
                 datas = st.session_state.test
                 container = st.container(border=True)
-                container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='color: black; font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
+                container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
                 col1, col2 = st.columns((1.1, 3))
                 with col1:
                     container = st.container(border=True)
-                    container.markdown(f"<span style='color: black; font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
+                    container.markdown(f"<span style='font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
                     for i in range(len(datas[1])):
                         container.markdown(f"- {datas[1][i]}")
                             
                     container = st.container(border=True)
-                    container.markdown(f"<span style='color: black; font-weight: 900'>Melhor Relação Risco/Retorno:</span>", unsafe_allow_html=True)
+                    container.markdown(f"<span style='font-weight: 900'>Melhor Relação Risco/Retorno:</span>", unsafe_allow_html=True)
                     for i in range(len(datas[2])):
                         container.markdown(f"- {datas[2][i]}")
 
                     container = st.container(border=True)
-                    container.markdown(f"<span style='color: black; font-weight: 900'>Risco Definido:</span>", unsafe_allow_html=True)
+                    container.markdown(f"<span style='font-weight: 900'>Risco Definido:</span>", unsafe_allow_html=True)
                     for i in range(len(datas[3])):
                         container.markdown(f"- {datas[3][i]}")
 

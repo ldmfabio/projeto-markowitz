@@ -9,7 +9,7 @@ credentials:
       failed_login_attempts: 0
       logged_in: false
       name: Mateus
-      password: $2b$12$hR6Y1krttRPOx8WALPZVOemQYU3WheNUfohRurT6/sthZ5I1PL6Ja
+      password: $2b$12$uhf1afrDxOORi1PXmTnpXO.Uc2R4TMbjMWRku4RcouJDA0OOuhakO
     mateus:
       email: admin2@admin.com
       failed_login_attempts: 0
