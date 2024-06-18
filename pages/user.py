@@ -45,7 +45,7 @@ def main():
         st.write("Nome Completo:")
         row_name = st.columns([5, 1])
         new_name = row_name[0].text_input("Nome Completo:", name, label_visibility='collapsed')
-        if row_name[1].button("Alterar Nome", use_container_width=True, help="Clique para alterar o nome"):
+        if row_name[1].button("Alterar Nome", use_container_width=True, help="Clique para alterar o nome", disabled=True):
             try:
                 auth_handler.update_user_details(username, new_name)
                 st.success("Nome alterado com sucesso!")
@@ -55,7 +55,7 @@ def main():
         st.write("Email:")
         row_email = st.columns([5, 1])
         new_email = row_email[0].text_input("Email:", email, label_visibility='collapsed')
-        if row_email[1].button("Alterar Email", use_container_width=True, help="Clique para alterar o email"):
+        if row_email[1].button("Alterar Email", use_container_width=True, help="Clique para alterar o email", disabled=True):
             try:
                 auth_handler.update_user_details(username, new_email)
                 st.success("Email alterado com sucesso!")

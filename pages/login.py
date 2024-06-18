@@ -6,7 +6,7 @@ from yaml.loader import SafeLoader
 def main():
     st.set_page_config(
         page_title="Login", 
-        page_icon="😶", 
+        page_icon="🙂", 
         layout="centered", 
         initial_sidebar_state="collapsed"
     )
@@ -37,7 +37,8 @@ def main():
 
     st.caption("Opções:")
     st.button("Esqueci minha senha", use_container_width=False, help="Clique para redefinir sua senha")
-    st.button("Registrar novo usuário", use_container_width=False, help="Clique para criar uma nova conta")
+    if st.button("Registrar novo usuário", use_container_width=False, help="Clique para criar uma nova conta"):
+        st.switch_page("pages/create_account.py")
 
 if __name__ == "__main__":
     main()

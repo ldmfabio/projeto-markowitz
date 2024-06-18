@@ -10,6 +10,11 @@ credentials:
       logged_in: false
       name: Mateus
       password: $2b$12$uhf1afrDxOORi1PXmTnpXO.Uc2R4TMbjMWRku4RcouJDA0OOuhakO
+    jony:
+      email: mateusalbano22222222222222@gmail.com
+      logged_in: false
+      name: Mateus Lopes Albano
+      password: $2b$12$4WTS4J7WQiLj1oQfoEZomOS0Dh8EAlwAzgMmHWKEQeARa3Ynb.AX.
     mateus:
       email: admin2@admin.com
       failed_login_attempts: 0
