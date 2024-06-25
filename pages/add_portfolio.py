@@ -32,7 +32,7 @@ def main():
             )
         
         with cols_form_portflio[1]:
-            number = st.number_input('Digite o número de', step=1, max_value=5,  min_value=1, value=1)
+            number = st.number_input('Digite o número de ações', step=1, max_value=5,  min_value=1, value=1)
 
         stocks = [st.text_input(f"Nome da Ação {i+1}", placeholder="Digite aqui") for i in range(number)]
 
@@ -52,8 +52,8 @@ def main():
                     "name": name_portfolio,
                     "stocks": stocks
                 })
-                st.success('Adicionado com sucesso', icon="✅")
-            else:    
+                st.switch_page("pages/portfolio.py")
+            else:
                 st.warning("Preencha todos os campos", icon="⚠️")
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 def create_navbar(type=None):
     st.divider()
@@ -11,3 +12,9 @@ def create_navbar(type=None):
     if not type:
         st.write("__Créditos__")
         st.image('./assets/img/group3.png', use_column_width=True)
+
+def loader(text):
+    text = text + '...'
+    with st.spinner(text):
+        time.sleep(1)
+    # fazer um toast no futuro

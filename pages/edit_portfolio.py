@@ -1,13 +1,6 @@
 import streamlit as st
-import pandas as pd
 from manager.user_manager import UserManager
-import time
-
-def loader(text):
-    text = text + '...'
-    with st.spinner(text):
-        time.sleep(1)
-    # fazer um toast no futuro
+from utils import loader, create_navbar
 
 def main():
     user_manager = UserManager()
@@ -22,12 +15,7 @@ def main():
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
-        st.divider()
-        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
-        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
-        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
-        st.divider() 
+        create_navbar()
     with col3:
         st.title(f"Editar Carteira: {st.session_state.portfolios_edit['name']}")
         cols1 = st.columns([4,1])
