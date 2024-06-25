@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 import cvxopt as opt
 import os
 import json
+import random
 
 class AppManager:
     def __init__(self):
@@ -322,53 +323,60 @@ class AppManager:
         return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
     
 
-    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='blue'):
+    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='gray'):
         names = [item.split(": ")[0] for item in datas]
         percentages = [int(float(item.split(": ")[1].strip('%'))) for item in datas]
         data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
 
+        if subtext == 'Risco Mínimo':
+            risk_colors = ['#56E280', '#1D7C39', '#165D2B', '#0B3017', '#0A2914']
+        elif subtext == 'Risco Definido':
+            risk_colors = ['#EE9149', '#D87E39', '#C26B29', '#A05821', '#83481B']
+        elif subtext == 'Risco Alto':
+            risk_colors = ['#EF4949', '#C62525', '#A31E1E', '#811818', '#400C0C']
+        else:
+            risk_colors = ['#FF0000', '#FF4500', '#FFA500', '#FFD700', '#FFFF00', '#ADFF2F', '#32CD32', '#008000', '#006400', '#000000']
+
         option = {
             "title": {
-                "text": title,
-                "subtext": subtext,
-                "left": 'center',
-                "textStyle": {
-                    "color": color
-                },
-                "subtextStyle": {
-                    "color": 'gray'  # Color for the subtitle
-                }
+            "text": title,
+            "subtext": subtext,
+            "left": 'center',
+            "subtextStyle": {
+                "color": color
+            }
             },
             "tooltip": {
-                "trigger": 'item'
+            "trigger": 'item'
             },
             "legend": {
-                "left": 'center',
-                "top": '16%',
+            "left": 'center',
+            "top": '16%',
             },
+            "color": risk_colors,
             "series": [
-                {
-                    "name": 'portifolio',
-                    "type": 'pie',
-                    "radius": ['35%', '65%'],
-                    "center": ['50%', '65%'],
-                    "avoidLabelOverlap": False,
-                    "label": {
-                        "show": False,
-                        "position": 'center'
-                    },
-                    "emphasis": {
-                        "label": {
-                        "show": True,
-                        "fontSize": 18,
-                        "fontWeight": 'bold'
-                    }
-                    },
-                    "labelLine": {
-                        "show": False
-                    },
-                    "data": data,
+            {
+                "name": 'portifolio',
+                "type": 'pie',
+                "radius": ['35%', '65%'],
+                "center": ['50%', '65%'],
+                "avoidLabelOverlap": False,
+                "label": {
+                "show": False,
+                "position": 'center'
+                },
+                "emphasis": {
+                "label": {
+                    "show": True,
+                    "fontSize": 18,
+                    "fontWeight": 'bold'
                 }
+                },
+                "labelLine": {
+                "show": False
+                },
+                "data": data
+            }
             ]
         }
         st_echarts(options=option, height="400px", key=datas)
@@ -390,10 +398,6 @@ class AppManager:
             container = st.container(border=True)
             with container:
                 self.get_portfolio_pie(datas=datas[2], title='Portifólio de Melhor Relação Risco/Retorno', subtext='Risco Alto', color='red')
-
-# title='Portifolio com Porcentagem de Risco'
-# title='Melhor Relação Risco/Retorno'
-# title='Risco Definido'
 
     def show_results(self):
         self.get_pie_portfolios()
