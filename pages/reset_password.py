@@ -5,6 +5,7 @@ from yaml.loader import SafeLoader
 from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 
 def main():
+    st.title("Alterar Senha")
     username = st.session_state['username']
     
     with open('./config.yaml') as file:

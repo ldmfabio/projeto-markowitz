@@ -40,14 +40,14 @@ def main():
         st.title(f"Perfil")
         
         st.write("Nome de Usuário:")
-        st.text_input("Nome de Usuário:", username, disabled=True, label_visibility='collapsed')
+        st.text_input("Nome de Usuário:", username, disabled=False, label_visibility='collapsed')
 
         st.write("Nome Completo:")
         row_name = st.columns([5, 1])
         new_name = row_name[0].text_input("Nome Completo:", name, label_visibility='collapsed')
-        if row_name[1].button("Alterar Nome", use_container_width=True, help="Clique para alterar o nome", disabled=True):
+        if row_name[1].button("Alterar Nome", use_container_width=True, help="Clique para alterar o nome", disabled=False):
             try:
-                auth_handler.update_user_details(username, new_name)
+                auth_handler.update_user_details(new_name, username, 'name')
                 st.success("Nome alterado com sucesso!")
             except Exception as e:
                 st.error(e)
@@ -55,9 +55,9 @@ def main():
         st.write("Email:")
         row_email = st.columns([5, 1])
         new_email = row_email[0].text_input("Email:", email, label_visibility='collapsed')
-        if row_email[1].button("Alterar Email", use_container_width=True, help="Clique para alterar o email", disabled=True):
+        if row_email[1].button("Alterar Email", use_container_width=True, help="Clique para alterar o email", disabled=False):
             try:
-                auth_handler.update_user_details(username, new_email)
+                auth_handler.update_user_details(new_email, username, 'email')
                 st.success("Email alterado com sucesso!")
             except Exception as e:
                 st.error(e)
