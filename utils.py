@@ -18,3 +18,32 @@ def loader(text):
     with st.spinner(text):
         time.sleep(1)
     # fazer um toast no futuro
+
+    import streamlit as st
+
+def add_custom_css():
+    st.markdown(
+        """
+        <style>
+        .custom-container {
+            background-color: #f0f0f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .custom-title {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+def main():
+    
+
+    st.write("This is outside the custom container.")
+
+if __name__ == "__main__":
+    main()

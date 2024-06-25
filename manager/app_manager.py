@@ -14,7 +14,8 @@ class AppManager:
         self.init_session_state()
 
     def init_session_state(self):
-        st.session_state.showResult = st.session_state.get('showResult', False)
+        st.session_state.show_result = st.session_state.get('show_result', False)
+        st.session_state.result = st.session_state.get('result', None)
         st.session_state.test = st.session_state.get('test', None)
         st.session_state.disable = False
         st.session_state.portfolios = st.session_state.get('portfolios', [{"name": "Carteira 1", "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]}])
@@ -66,6 +67,7 @@ class AppManager:
 
 
     def display_results(self, datas):
+        datas = st.session_state.result
         df_pr = pd.DataFrame(
             {
                 "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
@@ -318,3 +320,140 @@ class AppManager:
         )
         
         return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
+    
+
+    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='blue'):
+        names = [item.split(": ")[0] for item in datas]
+        percentages = [int(float(item.split(": ")[1].strip('%'))) for item in datas]
+        data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
+
+        option = {
+            "title": {
+                "text": title,
+                "subtext": subtext,
+                "left": 'center',
+                "textStyle": {
+                    "color": color
+                },
+                "subtextStyle": {
+                    "color": 'gray'  # Color for the subtitle
+                }
+            },
+            "tooltip": {
+                "trigger": 'item'
+            },
+            "legend": {
+                "left": 'center',
+                "top": '16%',
+            },
+            "series": [
+                {
+                    "name": 'portifolio',
+                    "type": 'pie',
+                    "radius": ['35%', '65%'],
+                    "center": ['50%', '65%'],
+                    "avoidLabelOverlap": False,
+                    "label": {
+                        "show": False,
+                        "position": 'center'
+                    },
+                    "emphasis": {
+                        "label": {
+                        "show": True,
+                        "fontSize": 18,
+                        "fontWeight": 'bold'
+                    }
+                    },
+                    "labelLine": {
+                        "show": False
+                    },
+                    "data": data,
+                }
+            ]
+        }
+        st_echarts(options=option, height="400px", key=datas)
+
+    def get_pie_portfolios(self):
+        datas = st.session_state.result
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(datas=datas[1], title='Portifólio de Menor Risco', subtext='Risco Mínimo', color='green')
+                    
+        with col2:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(datas=datas[3], title='Portifólio com Risco Definido', subtext='Risco Definido', color='orange')
+
+        with col3:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(datas=datas[2], title='Portifólio de Melhor Relação Risco/Retorno', subtext='Risco Alto', color='red')
+
+# title='Portifolio com Porcentagem de Risco'
+# title='Melhor Relação Risco/Retorno'
+# title='Risco Definido'
+
+    def show_results(self):
+        self.get_pie_portfolios()
+        self.show_results_old()
+
+    def show_results_old(self):
+        fig = st.session_state.result[0]
+        fig.update_layout(
+            title={
+                'text': "Análise de Carteira de Ações (Fronteira Eficiente)",
+                'y': 0.95,       # Posição do título no eixo y (0 a 1)
+                'x': 0.05,          # Posição do título no eixo x (0 a 1)
+                'xanchor': 'left',  # Ancoragem horizontal do título
+                'yanchor': 'top',   # Ancoragem vertical do título
+            },
+            legend=dict(
+                traceorder='normal',  # Ordem dos itens na legenda (normal ou reversed)
+                orientation='h',     # Orientação da legenda ('h' para horizontal ou 'v' para vertical)
+                x=0,                # Posição da legenda no eixo x (0 a 1)
+                y=1.15,               # Posição da legenda no eixo y (0 a 1, negativo para baixo)
+                xanchor='left',     # Ancoragem horizontal da legenda
+                yanchor='top',        # Ancoragem vertical da legenda
+            ),
+            title_font=dict(size=22, color='#333'),  # Tamanho e cor do título
+        )
+        [df_pr, df_mr, df_rd] = self.display_results(st.session_state.result)
+        datas = st.session_state.result
+        container = st.container(border=True)
+        container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
+        col1, col2 = st.columns((1.1, 3))
+        with col1:
+            container = st.container(border=True)
+            container.markdown(f"<span style='font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
+            for i in range(len(datas[1])):
+                container.markdown(f"- {datas[1][i]}")
+                    
+            container = st.container(border=True)
+            container.markdown(f"<span style='font-weight: 900'>Melhor Relação Risco/Retorno:</span>", unsafe_allow_html=True)
+            for i in range(len(datas[2])):
+                container.markdown(f"- {datas[2][i]}")
+
+            container = st.container(border=True)
+            container.markdown(f"<span style='font-weight: 900'>Risco Definido:</span>", unsafe_allow_html=True)
+            for i in range(len(datas[3])):
+                container.markdown(f"- {datas[3][i]}")
+
+        with col2:
+            container = st.container(border=True)
+            container.plotly_chart(
+                fig, 
+                use_container_width=True, 
+                config={
+                    'displayModeBar': True,  # Hide the mode bar
+                    'scrollZoom': True,       # Enable mouse wheel zooming
+                    'displaylogo': True,     # Hide the Plotly logo
+                    'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d']  # Remove specific buttons
+                }
+            )
+            container2 = st.container(border=True, height=370)
+        
+        self.show_example_graphs(y=df_pr['Ações'], x=df_pr['Porcentagem de Risco'], title='Porcentagem de Risco')
+        self.show_example_graphs(y=df_mr['Ações'], x=df_mr['Melhor Relação Risco/Retorno'], title='Melhor Relação Risco/Retorno')
+        self.show_example_graphs(y=df_rd['Ações'], x=df_rd['Risco Definido'], title='Risco Definido')
