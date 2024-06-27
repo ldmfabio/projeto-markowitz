@@ -99,45 +99,6 @@ class AppManager:
         else:
             st.error(f"Opção de filtro inválida: {selected_option}")
 
-
-        # n_rows = len(portfolios) // 3  # Integer division for cleaner layout
-        # col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
-
-        # def display_portfolio_column(start, end, column):
-        #     """Displays portfolios in a specific column with filtering applied."""
-        #     for i in range(start, min(end, len(portfolios))):
-        #         container = column.container(border=True)
-        #         container.write(f"##### {portfolios[i]['name']}")
-        #         for stock in portfolios[i]['stocks']:
-        #             container.markdown(f"- {stock}")
-        #         if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True, help="Edita a carteira selecionada"):
-        #             st.session_state.portfolios_edit = portfolios[i]
-        #             st.switch_page("pages/edit_portfolio.py")
-        #         st.write("")
-
-        # # Display portfolios based on selected option
-        # if selected_option == "Data de Criação":
-        #     try:
-        #         sorted_portfolios = portfolios
-        #     except KeyError:
-        #         st.error("Chave 'created_at' não encontrada nos dados do portfólio.")
-        #         return
-        #     display_portfolio_column(0, int(n_rows + 1), col2_1)
-        #     display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-        #     display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
-        # elif selected_option == "Alfabético":
-        #     display_portfolio_column(0, int(n_rows + 1), col2_1)
-        #     display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-        #     display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
-        # elif selected_option == "Número de Ações":
-        #     sorted_portfolios = sorted(portfolios, key=lambda x: len(x['stocks']), reverse=True)  # Sort by number of stocks (descending)
-        #     display_portfolio_column(0, int(n_rows + 1), col2_1)
-        #     display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-        #     display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
-        # else:
-        #     st.error(f"Opção de filtro inválida: {selected_option}")  # Handle unexpected options
-
-
     def display_results(self, datas):
         datas = st.session_state.result
         df_pr = pd.DataFrame(
@@ -474,6 +435,7 @@ class AppManager:
             container = st.container(border=True)
             with container:
                 self.get_portfolio_pie(datas=datas[1], title='Portifólio Atual', subtext='Risco não definido')
+        self.show_results_old()
 
     def show_results(self):
         self.get_pie_portfolios()
@@ -489,7 +451,7 @@ class AppManager:
             legend=dict(
                 traceorder='normal',  # Ordem dos itens na legenda (normal ou reversed)
                 orientation='h',     # Orientação da legenda ('h' para hmorizontal ou 'v' para vertical)
-                x=0,                # Posição da legenda no eixo x (0 a 1)
+                x=0.01,                # Posição da legenda no eixo x (0 a 1)
                 y=1.15,               # Posição da legenda no eixo y (0 a 1, negativo para baixo)
                 xanchor='left',     # Ancoragem horizontal da legenda
                 yanchor='top',        # Ancoragem vertical da legenda
@@ -506,9 +468,79 @@ class AppManager:
                 'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d']  # Remove specific buttons
             }
         )
-        self.show_results_old()
 
     def show_results_old(self):
         datas = st.session_state.result
         container = st.container(border=True)
         container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
+
+    def heatmap(self):
+        stocks = [
+            'PETR4.SA',
+            'VALE3.SA',
+            'ITUB4.SA',
+            'stEMBR3.SA',
+            ' BBDC4.SA'
+        ]
+
+        data = [
+            [0, 0, 5], [0, 1, 4], [0, 2, 3], [0, 3, 2], [0, 4, 1],
+            [1, 0, 4], [1, 1, 3], [1, 2, 2], [1, 3, 1], [1, 4, 2],
+            [2, 0, 3], [2, 1, 2], [2, 2, 1], [2, 3, 2], [2, 4, 3],
+            [3, 0, 2], [3, 1, 1], [3, 2, 2], [3, 3, 3], [3, 4, 4],
+            [4, 0, 1], [4, 1, 2], [4, 2, 3], [4, 3, 4], [4, 4, 5]
+        ]
+
+        option = {
+            "title": {
+                "text": 'Correlação entre Ações',
+                "left": '5%',
+                "top": 'top'
+            },
+            "tooltip": {
+                "position": 'top'
+            },
+            "grid": {
+                "height": '50%',
+                "top": '10%'
+            },
+            "xAxis": {
+                "type": 'category',
+                "data": stocks,
+                "splitArea": {
+                    "show": True
+                }
+            },
+            "yAxis": {
+            "type": 'category',
+            "data": stocks,
+            "splitArea": {
+                "show": True
+            }
+            },
+            "visualMap": {
+                "min": 0,
+                "max": 5,
+                "calculable": True,
+                "orient": 'horizontal',
+                "left": 'center',
+                "bottom": '15%'
+            },
+            "series": [
+                {
+                    "name": 'Punch Card',
+                    "type": 'heatmap',
+                    "data": data,
+                    "label": {
+                    "show": True
+                    },
+                    "emphasis": {
+                    "itemStyle": {
+                        "shadowBlur": 10,
+                        "shadowColor": 'rgba(0, 0, 0, 0.5)'
+                    }
+                    }
+                }
+            ]
+        }
+        st_echarts(options=option, height="400px")
