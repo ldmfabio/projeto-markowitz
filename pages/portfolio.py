@@ -21,7 +21,7 @@ def main():
         create_navbar(type='portfolio')
         st.write("__Opções__")
         filter_options = ["Data de Criação", "Alfabético", "Número de Ações"]
-        selected_option = st.selectbox("Filtrar por:", filter_options)
+        st.session_state.selected_option = st.selectbox("Filtrar por:", filter_options, index=2)
         if st.button("Adicionar Carteira", key="add_portfolio", type="primary", use_container_width=True, help="Adiciona uma nova carteira"):
             st.switch_page("pages/add_portfolio.py")
         st.divider()
@@ -33,7 +33,7 @@ def main():
         if st.session_state.portfolios == []:
             st.caption("## Você ainda não possui nenhuma carteira cadastrada.")
         else:
-            app_manager.display_portfolios(st.session_state.portfolios, selected_option)
+            app_manager.display_portfolios()
                             
 
 if __name__ == "__main__":

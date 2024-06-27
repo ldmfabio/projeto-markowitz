@@ -37,10 +37,10 @@ def main():
         name = st.session_state['name']
         username = st.session_state['username']
         email = st.session_state['email']
-        st.title(f"Perfil")
+        st.write("## Perfil do Usuário")
         
         st.write("Nome de Usuário:")
-        st.text_input("Nome de Usuário:", username, disabled=False, label_visibility='collapsed')
+        st.text_input("Nome de Usuário:", username, disabled=True, label_visibility='collapsed')
 
         st.write("Nome Completo:")
         row_name = st.columns([5, 1])
@@ -48,7 +48,10 @@ def main():
         if row_name[1].button("Alterar Nome", use_container_width=True, help="Clique para alterar o nome", disabled=False):
             try:
                 auth_handler.update_user_details(new_name, username, 'name')
+                with open('./config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
                 st.success("Nome alterado com sucesso!")
+                name = new_name
             except Exception as e:
                 st.error(e)
         
@@ -58,7 +61,10 @@ def main():
         if row_email[1].button("Alterar Email", use_container_width=True, help="Clique para alterar o email", disabled=False):
             try:
                 auth_handler.update_user_details(new_email, username, 'email')
+                with open('./config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
                 st.success("Email alterado com sucesso!")
+                email = new_email
             except Exception as e:
                 st.error(e)
                 

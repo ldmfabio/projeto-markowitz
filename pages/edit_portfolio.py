@@ -36,7 +36,7 @@ def main():
             )
             stocks.append(stock)
 
-        def validar_form():
+        def validar_form(name_portfolio, stocks):
             if name_portfolio == "":
                 return False
             for stock in stocks:
@@ -45,23 +45,30 @@ def main():
             return True
 
         
-        cols2 = st.columns([1,2])
+        cols_btn_1, cols_btn_2 = st.columns([1,2])
 
-        if cols2[1].button("Salvar Alterações", key="save", use_container_width=True, type="primary", help="Salva as alterações feitas na carteira"):
-            loader('Salvando Alterações')
-            if validar_form():
-                st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)] = {
-                    "name": name_portfolio,
-                    "stocks": stocks
-                }
+        # st.write(st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)])
+        # st.write(name_portfolio)
+        # st.write(stocks)
+
+        with cols_btn_1:
+            if st.button("Excluir Carteira", key="delete", use_container_width=True, type="secondary", help="Exclui a carteira"):
+                loader('Excluindo Carteira')
+                st.session_state.portfolios.remove(st.session_state.portfolios_edit)
                 st.switch_page("pages/portfolio.py")
-            else:
-                st.warning("Preencha todos os campos", icon="⚠️")
 
-        if cols2[0].button("Excluir Carteira", key="delete", use_container_width=True, type="secondary", help="Exclui a carteira"):
-            loader('Excluindo Carteira')
-            st.session_state.portfolios.remove(st.session_state.portfolios_edit)
-            st.switch_page("pages/portfolio.py")
+        with cols_btn_2:
+            if st.button("Salvar Alterações", key="save", use_container_width=True, type="primary", help="Salva as alterações feitas na carteira"):
+                loader('Salvando Alterações')
+                if validar_form(name_portfolio, stocks):
+                    st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)] = {
+                        "name": name_portfolio,
+                        "stocks": stocks
+                    }
+                    st.switch_page("pages/portfolio.py")
+                else:
+                    st.warning("Preencha todos os campos", icon="⚠️")
 
 if __name__ == "__main__":
     main()
+

@@ -20,8 +20,6 @@ def loader(text):
         time.sleep(1)
     # fazer um toast no futuro
 
-    import streamlit as st
-
 def add_custom_css():
     st.markdown(
         """
