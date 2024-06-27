@@ -28,8 +28,8 @@ def main():
         st.write("")
         st.image('./assets/img/group3.png', use_column_width=True)
     with col3:
-        st.title("Suas Carteiras")
-
+        st.write("## Suas Carteiras")
+        st.info("Aqui você pode visualizar e gerenciar suas carteiras de ações.")
         if st.session_state.portfolios == []:
             st.caption("## Você ainda não possui nenhuma carteira cadastrada.")
         else:
