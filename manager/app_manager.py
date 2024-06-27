@@ -282,7 +282,7 @@ class AppManager:
             x=[portfolio_min_risk],
             y=[portfolio_min_return],
             mode='markers',
-            marker=dict(size=16, color='red'),
+            marker=dict(size=16, color='green'),
             name='Portfólio de Menor Risco',
         ))
 
@@ -300,7 +300,7 @@ class AppManager:
             x=[risk_sharpe],
             y=[returno_sharpe],
             mode='markers',
-            marker=dict(size=16, color='green'),
+            marker=dict(size=16, color='red'),
             name='Portfólio de Melhor Relação Risco/Retorno (Sharpe)',
         ))
 
@@ -334,8 +334,8 @@ class AppManager:
             risk_colors = ['#EE9149', '#D87E39', '#C26B29', '#A05821', '#83481B']
         elif subtext == 'Risco Alto':
             risk_colors = ['#EF4949', '#C62525', '#A31E1E', '#811818', '#400C0C']
-        else:
-            risk_colors = ['#FF0000', '#FF4500', '#FFA500', '#FFD700', '#FFFF00', '#ADFF2F', '#32CD32', '#008000', '#006400', '#000000']
+        elif subtext == 'Risco não definido':
+            risk_colors = ['#D3D3D3', '#A9A9A9', '#808080', '#696969', '#000000']
 
         option = {
             "title": {
@@ -379,31 +379,33 @@ class AppManager:
             }
             ]
         }
-        st_echarts(options=option, height="400px", key=datas)
+        st_echarts(options=option, height="400px", key=title)
 
     def get_pie_portfolios(self):
         datas = st.session_state.result
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            container = st.container(border=True)
-            with container:
-                self.get_portfolio_pie(datas=datas[1], title='Portifólio de Menor Risco', subtext='Risco Mínimo', color='green')
-                    
+        col1, col2, col3, col4 = st.columns(4)
         with col2:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[3], title='Portifólio com Risco Definido', subtext='Risco Definido', color='orange')
-
+                self.get_portfolio_pie(datas=datas[1], title='Menor Risco', subtext='Risco Mínimo', color='green')
+                    
         with col3:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[2], title='Portifólio de Melhor Relação Risco/Retorno', subtext='Risco Alto', color='red')
+                self.get_portfolio_pie(datas=datas[3], title='Risco Definido', subtext='Risco Definido', color='orange')
+
+        with col4:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(datas=datas[2], title='Melhor Relação Risco/Retorno', subtext='Risco Alto', color='red')
+        
+        with col1:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(datas=datas[1], title='Portifólio Atual', subtext='Risco não definido')
 
     def show_results(self):
         self.get_pie_portfolios()
-        self.show_results_old()
-
-    def show_results_old(self):
         fig = st.session_state.result[0]
         fig.update_layout(
             title={
@@ -415,7 +417,7 @@ class AppManager:
             },
             legend=dict(
                 traceorder='normal',  # Ordem dos itens na legenda (normal ou reversed)
-                orientation='h',     # Orientação da legenda ('h' para horizontal ou 'v' para vertical)
+                orientation='h',     # Orientação da legenda ('h' para hmorizontal ou 'v' para vertical)
                 x=0,                # Posição da legenda no eixo x (0 a 1)
                 y=1.15,               # Posição da legenda no eixo y (0 a 1, negativo para baixo)
                 xanchor='left',     # Ancoragem horizontal da legenda
@@ -423,41 +425,19 @@ class AppManager:
             ),
             title_font=dict(size=22, color='#333'),  # Tamanho e cor do título
         )
-        [df_pr, df_mr, df_rd] = self.display_results(st.session_state.result)
+        st.plotly_chart(
+            fig, 
+            use_container_width=True, 
+            config={
+                'displayModeBar': True,  # Hide the mode bar
+                'scrollZoom': True,       # Enable mouse wheel zooming
+                'displaylogo': True,     # Hide the Plotly logo
+                'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d']  # Remove specific buttons
+            }
+        )
+        self.show_results_old()
+
+    def show_results_old(self):
         datas = st.session_state.result
         container = st.container(border=True)
         container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
-        col1, col2 = st.columns((1.1, 3))
-        with col1:
-            container = st.container(border=True)
-            container.markdown(f"<span style='font-weight: 900'>Menor Risco:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[1])):
-                container.markdown(f"- {datas[1][i]}")
-                    
-            container = st.container(border=True)
-            container.markdown(f"<span style='font-weight: 900'>Melhor Relação Risco/Retorno:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[2])):
-                container.markdown(f"- {datas[2][i]}")
-
-            container = st.container(border=True)
-            container.markdown(f"<span style='font-weight: 900'>Risco Definido:</span>", unsafe_allow_html=True)
-            for i in range(len(datas[3])):
-                container.markdown(f"- {datas[3][i]}")
-
-        with col2:
-            container = st.container(border=True)
-            container.plotly_chart(
-                fig, 
-                use_container_width=True, 
-                config={
-                    'displayModeBar': True,  # Hide the mode bar
-                    'scrollZoom': True,       # Enable mouse wheel zooming
-                    'displaylogo': True,     # Hide the Plotly logo
-                    'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d']  # Remove specific buttons
-                }
-            )
-            container2 = st.container(border=True, height=370)
-        
-        self.show_example_graphs(y=df_pr['Ações'], x=df_pr['Porcentagem de Risco'], title='Porcentagem de Risco')
-        self.show_example_graphs(y=df_mr['Ações'], x=df_mr['Melhor Relação Risco/Retorno'], title='Melhor Relação Risco/Retorno')
-        self.show_example_graphs(y=df_rd['Ações'], x=df_rd['Risco Definido'], title='Risco Definido')
