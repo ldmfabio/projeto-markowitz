@@ -2,7 +2,8 @@ import streamlit as st
 import time
 
 def create_navbar(type=None):
-    st.title("ModernMKZ")
+    st.write("##### ")
+    st.write("### ModernMKZ")
     st.divider()
     st.write("__Menu de Navegação__")
     st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")

@@ -9,6 +9,8 @@ import cvxopt as opt
 import os
 import json
 import random
+import random
+import datetime
 
 class AppManager:
     def __init__(self):
@@ -21,32 +23,51 @@ class AppManager:
         st.session_state.disable = False
         st.session_state.portfolios = st.session_state.get('portfolios', [
             {
-                "name": "Carteira 4",
-                "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
+            "name": "Carteira 4",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
             },
             {
-                "name": "Carteira 1", 
-                "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA"]
+            "name": "Carteira 1", 
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}]
             },
             {
-                "name": "Carteira 2",
-                "stocks": ["PETR4.SA" "EMBR3.SA", "BBDC4.SA"]
+            "name": "Carteira 2",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
             },
             {
-                "name": "Carteira 3",
-                "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
+            "name": "Carteira 3",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
             },
             {
-                "name": "Carteira 5",
-                "stocks": ["PETR4.SA"]
+            "name": "Carteira 5",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}]
             },
             {
-                "name": "Carteira 6",
-                "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]
+            "name": "Carteira 6",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
             }
         ])
         st.session_state.selected_option = st.session_state.get('selected_option', "Número de Ações")
     
+    def formatted_real(self, value):
+        return f"{value:.2f}".replace(".", ",")
+
     def diplay_portfolio(self, portfolios):
         x = 0
         while x < len(portfolios):
@@ -55,7 +76,7 @@ class AppManager:
                 container = st.container(border=True)
                 container.write(f"##### {portfolios[x]['name']}")
                 for stock in portfolios[x]['stocks']:
-                    container.markdown(f"- {stock}")
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
                 if container.button("Editar Carteira", key=f"edit_{portfolios[x]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
                     st.session_state.portfolios_edit = portfolios[x]
                     st.switch_page("pages/edit_portfolio.py")
@@ -66,7 +87,7 @@ class AppManager:
                 container = st.container(border=True)
                 container.write(f"##### {portfolios[x+1]['name']}")
                 for stock in portfolios[x+1]['stocks']:
-                    container.markdown(f"- {stock}")
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
                 if container.button("Editar Carteira", key=f"edit_{portfolios[x+1]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
                     st.session_state.portfolios_edit = portfolios[x+1]
                     st.switch_page("pages/edit_portfolio.py")
@@ -77,7 +98,7 @@ class AppManager:
                 container = st.container(border=True)
                 container.write(f"##### {portfolios[x+2]['name']}")
                 for stock in portfolios[x+2]['stocks']:
-                    container.markdown(f"- {stock}")
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
                 if container.button("Editar Carteira", key=f"edit_{portfolios[x+2]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
                     st.session_state.portfolios_edit = portfolios[x+2]
                     st.switch_page("pages/edit_portfolio.py")
@@ -197,11 +218,22 @@ class AppManager:
             print(f"An error occurred: {e}")
             return 0
     
+    def get_current_date(self):
+        current_date = datetime.date.today()
+        formatted_date = current_date.strftime("%Y-%m-%d")
+        return formatted_date
+    
     def run(self, start_date, stocks): 
         np.random.seed(777)
+        stocks = [stocks['name'] for stocks in stocks]
+        # values = [stocks['value'] for stocks in stocks]
 
-        start_date = '2022-01-01'
-        end_date = '2023-01-01'
+        end_date = self.get_current_date()
+        current_year = int(end_date.split("-")[0])
+        if start_date == "3 anos":
+            start_date = str(current_year - 3) + end_date[4:]
+        elif start_date == "5 anos":
+            start_date = str(current_year - 5) + end_date[4:]
 
         print("===========================================")
         print("Iniciando a análise de carteira de ações...")
@@ -371,12 +403,16 @@ class AppManager:
 
         option = {
             "title": {
-            "text": title,
-            "subtext": subtext,
-            "left": 'center',
-            "subtextStyle": {
-                "color": color
-            }
+                "text": title,
+                "subtext": subtext,
+                "left": 'center',
+                "textStyle": {
+                    # "color": color
+                    "fontSize": "16px",
+                },
+                "subtextStyle": {
+                    "color": color
+                }
             },
             "tooltip": {
             "trigger": 'item'
@@ -390,28 +426,34 @@ class AppManager:
             {
                 "name": 'portifolio',
                 "type": 'pie',
-                "radius": ['35%', '65%'],
+                "radius": ['45%', '80%'],
                 "center": ['50%', '65%'],
                 "avoidLabelOverlap": False,
+                "tooltip": {
+                    # desabiliar tooltop
+                    "trigger": '', 
+                    "formatter": "" 
+                },
                 "label": {
-                "show": False,
-                "position": 'center'
+                    "show": False,
+                    "position": 'center',
+                    "formatter": "{b} \n\n {c}%"
                 },
                 "emphasis": {
-                "label": {
-                    "show": True,
-                    "fontSize": 18,
-                    "fontWeight": 'bold'
-                }
+                    "label": {
+                        "show": True,
+                        "fontSize": 14,
+                        "fontWeight": 'bold'
+                    }
                 },
                 "labelLine": {
-                "show": False
+                    "show": False
                 },
                 "data": data
             }
             ]
         }
-        st_echarts(options=option, height="400px", key=title)
+        st_echarts(options=option, height="400px", key=f'{title}{subtext}{color}')
 
     def get_pie_portfolios(self):
         datas = st.session_state.result
@@ -429,12 +471,12 @@ class AppManager:
         with col4:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[2], title='Melhor Relação Risco/Retorno', subtext='Risco Alto', color='red')
+                self.get_portfolio_pie(datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red')
         
         with col1:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[1], title='Portifólio Atual', subtext='Risco não definido')
+                self.get_portfolio_pie(datas=datas[2], title='Portifólio Atual', subtext='Risco não definido')
         self.show_results_old()
 
     def show_results(self):

@@ -24,17 +24,31 @@ def main():
             value=st.session_state.portfolios_edit['name'],
             label="Nome da Carteira",
         )
-        number = cols1[1].number_input('Digite o número de', step=1, max_value=5,  min_value=1, value=len(st.session_state.portfolios_edit['stocks']))
+        number = cols1[1].number_input('Digite o número de ações', step=1, max_value=5,  min_value=1, value=len(st.session_state.portfolios_edit['stocks']))
 
         stocks = []
         for j in range(number):
             value = st.session_state.portfolios_edit['stocks'][j] if j < len(st.session_state.portfolios_edit['stocks']) else ""
-            stock = st.text_input(
+            cols = st.columns([4,1])
+            stock = cols[0].text_input(
                 key=f"stock_{j}",
-                value=value,
+                value=value['name'],
                 label=f"Nome da Ação {j+1}",
             )
-            stocks.append(stock)
+            stock_value = cols[1].number_input(
+                key=f"stock_value_{j}",
+                value=float(value['value']),
+                label=f"Valor Investido (R$)",
+                step=0.01, 
+                max_value=10000.0,
+                min_value=0.0,
+                format='%.2f'
+            )
+            stocks.append({
+                "name": stock,
+                "value": stock_value
+            
+            })
 
         def validar_form(name_portfolio, stocks):
             if name_portfolio == "":
