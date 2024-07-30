@@ -50,19 +50,21 @@ def main():
         
         if st.button('Fazer Busca', type='primary', use_container_width=True):
             selected_portfolio = next((item for item in st.session_state.portfolios if item['name'] == portfolio), None)
-            st.session_state.result = app_manager.run(time_period, selected_portfolio["stocks"])
+            st.session_state.result = app_manager.run(time_period, selected_portfolio["stocks"], selected_portfolio)
         
         st.divider()
         st.write("")
         st.image('./assets/img/group3.png', use_column_width=True)
     with col3:
         if st.session_state.get('result'):
+            st.write("")
             st.write("## Resultado da Análise")
             st.caption("Este resultado foi alcançado por meio de uma análise detalhada dos dados históricos de ações, utilizando o método de Markowitz para identificar a combinação ideal de ativos que maximiza o retorno esperado para um dado nível de risco.")
             st.write(f"*Você selecionou a carteira __{portfolio}__ e o período de __{time_period}__*")
             app_manager.show_results()
             app_manager.heatmap()
         else:
+            st.write("")
             st.write("## Ferramenta de Análise de Carteiras de Ações")
             st.caption("Selecionando uma carteira e um período de tempo, você poderá visualizar o resultado da análise de risco e retorno da carteira selecionada.")
             st.markdown(
