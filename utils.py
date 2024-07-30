@@ -21,6 +21,9 @@ def loader(text):
         time.sleep(1)
     # fazer um toast no futuro
 
+def calc_value(total, porcentagem):
+    return (porcentagem / 100) * total
+
 def add_custom_css():
     st.markdown(
         """
@@ -35,14 +38,23 @@ def add_custom_css():
             font-size: 24px;
             font-weight: bold;
         }
+
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        
+        .stDeployButton { visibility: hidden; }
+        
+        [data-testid="stStatusWidget"] { visibility: hidden; }
+        [data-testid="stHeader"] { visibility: hidden; }
+        [data-testid="stAppViewBlockContainer"] { padding: 2em 5em; }
+        [data-testid="stSidebar"] { display: none;  }
+        [data-testid="baseButton-headerNoPadding"] { display: none; visibility: hidden; }
         </style>
         """,
         unsafe_allow_html=True
     )
 
 def main():
-    
-
     st.write("This is outside the custom container.")
 
 if __name__ == "__main__":

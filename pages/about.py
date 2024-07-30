@@ -3,7 +3,6 @@ from streamlit_authenticator.authenticate.authentication import AuthenticationHa
 import yaml
 from yaml.loader import SafeLoader
 from manager.user_manager import UserManager
-
 from utils import *
 
 def main():
@@ -16,6 +15,7 @@ def main():
         layout="wide", 
         initial_sidebar_state="collapsed"
     )  
+    add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
@@ -28,6 +28,7 @@ def main():
         auth_handler = AuthenticationHandler(credentials=config['credentials'])
 
        
+        st.write("")
         st.write("## Bem-vindo ao Projeto de Pesquisa")
         st.write('''
             Lorem Ipsum é simplesmente uma simulação de texto da indústria tipográfica e de impressos, e vem sendo utilizado desde o século XVI, quando um impressor desco a ser integrado a softwares de editoração eletrônica como Aldus PageMaker.

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from manager.user_manager import UserManager
+from utils import *
 
 def main():
     user_manager = UserManager()
@@ -11,18 +12,15 @@ def main():
         layout="wide", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
-        st.divider()
-        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
-        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
-        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
-        st.divider() 
+        create_navbar()
     with col3:
-        st.title("Adicionar Carteira")
+        st.write("")
+        st.write("## Adicionar Carteira")
         cols_form_portflio = st.columns([4,1])
 
         with cols_form_portflio[0]:

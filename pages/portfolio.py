@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 from manager.user_manager import UserManager
 from manager.app_manager import AppManager
-from utils import create_navbar
+
+from utils import *
 
 def main(): 
     user_manager = UserManager()
@@ -14,6 +15,7 @@ def main():
         layout="wide", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
@@ -28,6 +30,7 @@ def main():
         st.write("")
         st.image('./assets/img/group3.png', use_column_width=True)
     with col3:
+        st.write("")
         st.write("## Suas Carteiras")
         st.info("Aqui você pode visualizar e gerenciar suas carteiras de ações.")
         if st.session_state.portfolios == []:

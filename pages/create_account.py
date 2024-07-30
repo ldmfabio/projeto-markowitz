@@ -3,6 +3,7 @@ from streamlit_authenticator.authenticate.authentication import AuthenticationHa
 import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
+from utils import *
 
 def main():
     st.set_page_config(
@@ -11,6 +12,7 @@ def main():
         layout="centered", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     with open('./config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)

@@ -1,6 +1,7 @@
 import streamlit as st
 from manager.user_manager import UserManager
-from utils import loader, create_navbar
+
+from utils import *
 
 def main():
     user_manager = UserManager()
@@ -11,13 +12,15 @@ def main():
         layout="wide", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
         create_navbar()
     with col3:
-        st.title(f"Editar Carteira: {st.session_state.portfolios_edit['name']}")
+        st.write("")
+        st.write(f"## Editar Carteira: {st.session_state.portfolios_edit['name']}")
         cols1 = st.columns([4,1])
         name_portfolio = cols1[0].text_input(
             key=f"portfolio_{st.session_state.portfolios.index(st.session_state.portfolios_edit)}",

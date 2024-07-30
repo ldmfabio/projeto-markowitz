@@ -11,6 +11,7 @@ import json
 import random
 import random
 import datetime
+from utils import *
 
 class AppManager:
     def __init__(self):
@@ -223,7 +224,7 @@ class AppManager:
         formatted_date = current_date.strftime("%Y-%m-%d")
         return formatted_date
     
-    def run(self, start_date, stocks): 
+    def run(self, start_date, stocks, selected_portfolio): 
         np.random.seed(777)
         stocks = [stocks['name'] for stocks in stocks]
         # values = [stocks['value'] for stocks in stocks]
@@ -246,7 +247,7 @@ class AppManager:
 
         returns = table.pct_change().dropna()
         mean_returns = returns.mean()
-        cov_matrix = returns.cov()
+        cov_matrix = returns.cov() # alterar para outra função
         risk_free_rate = self.get_selic()
 
         # ===========================================
@@ -384,10 +385,10 @@ class AppManager:
             showlegend=True,
         )
         
-        return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
+        return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset, selected_portfolio, stocks, table.pct_change().dropna()]
     
 
-    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='gray'):
+    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='gray', risk=False):
         names = [item.split(": ")[0] for item in datas]
         percentages = [int(float(item.split(": ")[1].strip('%'))) for item in datas]
         data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
@@ -418,8 +419,9 @@ class AppManager:
             "trigger": 'item'
             },
             "legend": {
-            "left": 'center',
-            "top": '16%',
+                "show": False,
+                "left": 'center',
+                "top": '0%',
             },
             "color": risk_colors,
             "series": [
@@ -427,7 +429,7 @@ class AppManager:
                 "name": 'portifolio',
                 "type": 'pie',
                 "radius": ['45%', '80%'],
-                "center": ['50%', '65%'],
+                "center": ['50%', '50%'],
                 "avoidLabelOverlap": False,
                 "tooltip": {
                     # desabiliar tooltop
@@ -453,7 +455,16 @@ class AppManager:
             }
             ]
         }
-        st_echarts(options=option, height="400px", key=f'{title}{subtext}{color}')
+        total = 0
+        black = 'color: #000; font-weight: 600'
+        st_echarts(options=option, height="300px", key=f'{title}{subtext}{color}')
+        for i in data:
+            total += i['value'] 
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>{i['name']}<p style='text-align: right; { '' if i['value'] == 0 else black}'>R$ {self.formatted_real(i['value'])}</p></div>", unsafe_allow_html=True)
+        if risk:
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>ATIVO LIVRE<p style='text-align: right; {black}'>R$ {self.formatted_real(calc_value(total, float(risk.strip('%'))))}</p></div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>ATIVO LIVRE<p style='text-align: right;'>R$ {self.formatted_real(0)}</p></div>", unsafe_allow_html=True)
 
     def get_pie_portfolios(self):
         datas = st.session_state.result
@@ -471,13 +482,19 @@ class AppManager:
         with col4:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red')
+                self.get_portfolio_pie(datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red', risk=datas[4])
         
         with col1:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[2], title='Portifólio Atual', subtext='Risco não definido')
-        self.show_results_old()
+                formatted_pie = self.formatted_data_pie(datas[-3])
+                self.get_portfolio_pie(datas=formatted_pie, title='Portifólio Atual', subtext='Risco não definido')
+
+    def formatted_data_pie(self, datas):
+        new_data = []
+        for i in datas['stocks']:
+            new_data.append(f"{i['name']}: {i['value']}%")
+        return new_data
 
     def show_results(self):
         self.get_pie_portfolios()
@@ -517,21 +534,22 @@ class AppManager:
         container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
 
     def heatmap(self):
-        stocks = [
-            'PETR4.SA',
-            'VALE3.SA',
-            'ITUB4.SA',
-            'stEMBR3.SA',
-            ' BBDC4.SA'
-        ]
+        corr_matrix = st.session_state.result[-1].corr()
+        stocks =  st.session_state.result[-2]
 
-        data = [
-            [0, 0, 5], [0, 1, 4], [0, 2, 3], [0, 3, 2], [0, 4, 1],
-            [1, 0, 4], [1, 1, 3], [1, 2, 2], [1, 3, 1], [1, 4, 2],
-            [2, 0, 3], [2, 1, 2], [2, 2, 1], [2, 3, 2], [2, 4, 3],
-            [3, 0, 2], [3, 1, 1], [3, 2, 2], [3, 3, 3], [3, 4, 4],
-            [4, 0, 1], [4, 1, 2], [4, 2, 3], [4, 3, 4], [4, 4, 5]
-        ]
+        df_heatmap = []
+        x = 0
+        y = 0
+        for i in corr_matrix.columns:
+            for j in corr_matrix.index:
+                df_heatmap.append([x, y, round(corr_matrix[i][j], 4)])
+                if y >= len(corr_matrix.columns) - 1:
+                    x += 1
+                    y = 0
+                else:
+                    y += 1
+                
+        data = df_heatmap
 
         option = {
             "title": {
@@ -548,21 +566,21 @@ class AppManager:
             },
             "xAxis": {
                 "type": 'category',
-                "data": stocks,
+                "data": stocks[::-1],
                 "splitArea": {
                     "show": True
                 }
             },
             "yAxis": {
             "type": 'category',
-            "data": stocks,
+            "data": stocks[::-1],
             "splitArea": {
                 "show": True
             }
             },
             "visualMap": {
-                "min": 0,
-                "max": 5,
+                "min": corr_matrix.min().min(),
+                "max": corr_matrix.max().max(),
                 "calculable": True,
                 "orient": 'horizontal',
                 "left": 'center',

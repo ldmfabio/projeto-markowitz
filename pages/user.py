@@ -5,7 +5,7 @@ from yaml.loader import SafeLoader
 from manager.user_manager import UserManager
 import streamlit_authenticator as stauth
 
-from utils import create_navbar
+from utils import *
 
 def main():
     user_manager = UserManager()
@@ -16,6 +16,7 @@ def main():
         layout="wide", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     with open('./config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
@@ -37,6 +38,7 @@ def main():
         name = st.session_state['name']
         username = st.session_state['username']
         email = st.session_state['email']
+        st.write("")
         st.write("## Perfil do Usuário")
         
         st.write("Nome de Usuário:")
