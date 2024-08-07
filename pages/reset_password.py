@@ -4,11 +4,11 @@ import yaml
 from yaml.loader import SafeLoader
 from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 
+from utils import *
 def main():
+    add_custom_css()
+    st.title("Alterar Senha")
     username = st.session_state['username']
-    
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
     
     with open('./config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)

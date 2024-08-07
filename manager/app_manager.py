@@ -8,64 +8,133 @@ import plotly.graph_objects as go
 import cvxopt as opt
 import os
 import json
+import random
+import random
+import datetime
+from manager.cov_matrix import cov1Para
+from utils import *
 
 class AppManager:
     def __init__(self):
         self.init_session_state()
+        self.verify_user()
 
     def init_session_state(self):
-        st.session_state.showResult = st.session_state.get('showResult', False)
+        st.session_state.show_result = st.session_state.get('show_result', False)
+        st.session_state.result = st.session_state.get('result', None)
         st.session_state.test = st.session_state.get('test', None)
         st.session_state.disable = False
-        st.session_state.portfolios = st.session_state.get('portfolios', [{"name": "Carteira 1", "stocks": ["PETR4.SA", "VALE3.SA", "ITUB4.SA", "EMBR3.SA", "BBDC4.SA"]}])
+        st.session_state.portfolios = st.session_state.get('portfolios', [
+            {
+            "name": "Carteira 4",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
+            },
+            {
+            "name": "Carteira 1", 
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}]
+            },
+            {
+            "name": "Carteira 2",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
+            },
+            {
+            "name": "Carteira 3",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
+            },
+            {
+            "name": "Carteira 5",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}]
+            },
+            {
+            "name": "Carteira 6",
+            "stocks": [{"name": "PETR4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "VALE3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "ITUB4.SA", "value": random.randint(1, 100)}, 
+                   {"name": "EMBR3.SA", "value": random.randint(1, 100)}, 
+                   {"name": "BBDC4.SA", "value": random.randint(1, 100)}]
+            }
+        ])
+        st.session_state.selected_option = st.session_state.get('selected_option', "Número de Ações")
+        if 'username' not in st.session_state:
+            st.session_state['username'] = None
+        if 'name' not in st.session_state:
+            st.session_state['name'] = None
+        if 'email' not in st.session_state:
+            st.session_state['email'] = None
+
+    def verify_user(self):
+        if st.session_state.get('authentication_status') != True:
+            st.switch_page("pages/login.py")
     
-    def display_portfolios(self, portfolios, selected_option):
-        """Displays portfolios with filtering based on the selected option.
+    def formatted_real(self, value):
+        return f"{value:.2f}".replace(".", ",")
 
-        Args:
-            portfolios (list): A list of dictionaries representing portfolios.
-            selected_option (str): The selected option for filtering ("Data de Criação", "Alfabético", or "Número de Ações").
-        """
-
-        n_rows = len(portfolios) // 3  # Integer division for cleaner layout
-        col2_1, col2_2, col2_3 = st.columns([1, 1, 1])
-
-        def display_portfolio_column(start, end, column):
-            """Displays portfolios in a specific column with filtering applied."""
-            for i in range(start, min(end, len(portfolios))):
-                container = column.container(border=True)
-                container.write(f"##### {portfolios[i]['name']}")
-                for stock in portfolios[i]['stocks']:
-                    container.markdown(f"- {stock}")
-                if container.button("Editar Carteira", key=f"edit_{i}", use_container_width=True, help="Edita a carteira selecionada"):
-                    st.session_state.portfolios_edit = portfolios[i]
+    def diplay_portfolio(self, portfolios):
+        x = 0
+        while x < len(portfolios):
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                container = st.container(border=True)
+                container.write(f"##### {portfolios[x]['name']}")
+                for stock in portfolios[x]['stocks']:
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
+                if container.button("Editar Carteira", key=f"edit_{portfolios[x]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
+                    st.session_state.portfolios_edit = portfolios[x]
                     st.switch_page("pages/edit_portfolio.py")
                 st.write("")
+            with col2:
+                if x+1 >= len(portfolios):
+                    break
+                container = st.container(border=True)
+                container.write(f"##### {portfolios[x+1]['name']}")
+                for stock in portfolios[x+1]['stocks']:
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
+                if container.button("Editar Carteira", key=f"edit_{portfolios[x+1]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
+                    st.session_state.portfolios_edit = portfolios[x+1]
+                    st.switch_page("pages/edit_portfolio.py")
+                st.write("")
+            with col3:
+                if x+2 >= len(portfolios):
+                    break
+                container = st.container(border=True)
+                container.write(f"##### {portfolios[x+2]['name']}")
+                for stock in portfolios[x+2]['stocks']:
+                    container.markdown(f"<div style='display:flex; justify-content:space-between'>{stock['name']}<p style='text-align: right'>R$ {self.formatted_real(stock['value'])}</p></div>", unsafe_allow_html=True)
+                if container.button("Editar Carteira", key=f"edit_{portfolios[x+2]['name']}", use_container_width=True, help="Edita a carteira selecionada"):
+                    st.session_state.portfolios_edit = portfolios[x+2]
+                    st.switch_page("pages/edit_portfolio.py")
+                st.write("")
+            x += 3
 
-        # Display portfolios based on selected option
+    def display_portfolios(self):
+        portfolios = st.session_state.portfolios
+        selected_option = st.session_state.selected_option
+
         if selected_option == "Data de Criação":
-            try:
-                sorted_portfolios = portfolios
-            except KeyError:
-                st.error("Chave 'created_at' não encontrada nos dados do portfólio.")
-                return
-            display_portfolio_column(0, int(n_rows + 1), col2_1)
-            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-            display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
+            self.diplay_portfolio(portfolios)
         elif selected_option == "Alfabético":
-            display_portfolio_column(0, int(n_rows + 1), col2_1)
-            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-            display_portfolio_column((int(n_rows * 2) + 1), (len(portfolios)), col2_3)
+            sorted_portfolios = sorted(portfolios, key=lambda x: x['name'])
+            self.diplay_portfolio(sorted_portfolios)
         elif selected_option == "Número de Ações":
-            sorted_portfolios = sorted(portfolios, key=lambda x: len(x['stocks']), reverse=True)  # Sort by number of stocks (descending)
-            display_portfolio_column(0, int(n_rows + 1), col2_1)
-            display_portfolio_column(int(n_rows + 1), (int(n_rows * 2) + 1), col2_2)
-            display_portfolio_column((int(n_rows * 2) + 1), (len(sorted_portfolios)), col2_3)
+            sorted_portfolios = sorted(portfolios, key=lambda x: len(x['stocks']), reverse=True)
+            self.diplay_portfolio(sorted_portfolios)
         else:
-            st.error(f"Opção de filtro inválida: {selected_option}")  # Handle unexpected options
-
+            st.error(f"Opção de filtro inválida: {selected_option}")
 
     def display_results(self, datas):
+        datas = st.session_state.result
         df_pr = pd.DataFrame(
             {
                 "Ações": [datas[1][i].split(": ")[0] for i in range(len(datas[1]))],
@@ -162,11 +231,22 @@ class AppManager:
             print(f"An error occurred: {e}")
             return 0
     
-    def run(self, start_date, stocks): 
+    def get_current_date(self):
+        current_date = datetime.date.today()
+        formatted_date = current_date.strftime("%Y-%m-%d")
+        return formatted_date
+    
+    def run(self, start_date, stocks, selected_portfolio): 
         np.random.seed(777)
+        stocks = [stocks['name'] for stocks in stocks]
+        # values = [stocks['value'] for stocks in stocks]
 
-        start_date = '2022-01-01'
-        end_date = '2023-01-01'
+        end_date = self.get_current_date()
+        current_year = int(end_date.split("-")[0])
+        if start_date == "3 anos":
+            start_date = str(current_year - 3) + end_date[4:]
+        elif start_date == "5 anos":
+            start_date = str(current_year - 5) + end_date[4:]
 
         print("===========================================")
         print("Iniciando a análise de carteira de ações...")
@@ -179,7 +259,9 @@ class AppManager:
 
         returns = table.pct_change().dropna()
         mean_returns = returns.mean()
-        cov_matrix = returns.cov()
+        nl, nc = returns.shape
+        returns = returns[1:nl]
+        cov_matrix = cov1Para(returns)
         risk_free_rate = self.get_selic()
 
         # ===========================================
@@ -279,7 +361,7 @@ class AppManager:
             x=[portfolio_min_risk],
             y=[portfolio_min_return],
             mode='markers',
-            marker=dict(size=16, color='red'),
+            marker=dict(size=16, color='green'),
             name='Portfólio de Menor Risco',
         ))
 
@@ -297,7 +379,7 @@ class AppManager:
             x=[risk_sharpe],
             y=[returno_sharpe],
             mode='markers',
-            marker=dict(size=16, color='green'),
+            marker=dict(size=16, color='red'),
             name='Portfólio de Melhor Relação Risco/Retorno (Sharpe)',
         ))
 
@@ -317,4 +399,245 @@ class AppManager:
             showlegend=True,
         )
         
-        return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset]
+        return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset, selected_portfolio, stocks, table.pct_change().dropna()]
+    
+
+    def get_portfolio_pie(self, current_datas, datas, title, subtext='Fake Data', color='gray', risk=False):
+        current_datas = self.formatted_current_datas(current_datas)
+        total = self.get_total(current_datas)
+
+        percentages = [float(item.split(": ")[1].strip('%')) for item in datas]
+        names = [item.split(": ")[0] for item in datas]
+
+        if risk:
+            names.append('ATIVO LIVRE')
+            percentages.append(float(risk.strip('%')))
+            data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
+        else:
+            data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
+
+        if subtext == 'Risco Mínimo':
+            risk_colors = ['#56E280', '#1D7C39', '#165D2B', '#0B3017', '#0A2914']
+        elif subtext == 'Risco Definido':
+            risk_colors = ['#EE9149', '#D87E39', '#C26B29', '#A05821', '#83481B']
+        elif subtext == 'Risco Alto':
+            risk_colors = ['#EF4949', '#C62525', '#A31E1E', '#811818', '#400C0C']
+        elif subtext == 'Risco não definido':
+            risk_colors = ['#D3D3D3', '#A9A9A9', '#808080', '#696969', '#444']
+
+        option = {
+            "title": {
+                "text": title,
+                "subtext": subtext,
+                "left": 'center',
+                "textStyle": {
+                    "color": color,
+                    "fontSize": "16px",
+                },
+                "subtextStyle": {
+                    "color": color
+                }
+            },
+            "tooltip": {
+            "trigger": 'item'
+            },
+            "legend": {
+                "show": False,
+                "left": 'center',
+                "top": '0%',
+            },
+            "color": risk_colors,
+            "series": [
+            {
+                "name": 'portifolio',
+                "type": 'pie',
+                "radius": ['45%', '80%'],
+                "center": ['50%', '50%'],
+                "avoidLabelOverlap": False,
+                "tooltip": {
+                    # desabiliar tooltop
+                    "trigger": '', 
+                    "formatter": "" 
+                },
+                "label": {
+                    "show": False,
+                    "position": 'center',
+                    "formatter": "{b} \n\n {c}%"
+                },
+                "emphasis": {
+                    "label": {
+                        "show": True,
+                        "fontSize": 14,
+                        "fontWeight": 'bold'
+                    }
+                },
+                "labelLine": {
+                    "show": False
+                },
+                "data": data
+            }
+            ]
+        }
+        black = 'color: #000; font-weight: 600'
+        st_echarts(options=option, height="300px", key=f'{title}{subtext}{color}')
+        for i in data:
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>{i['name']}<p style='text-align: right; { '' if i['value'] == 0 else black}'>R$ {self.formatted_real((float(i['value']) * total) / 100)}</p></div>", unsafe_allow_html=True)
+        if not risk:
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>ATIVO LIVRE<p style='text-align: right;'>R$ {self.formatted_real(0)}</p></div>", unsafe_allow_html=True)
+
+    def get_pie_portfolios(self):
+        datas = st.session_state.result
+        col1, col2, col3, col4 = st.columns(4)
+        with col2:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[1], title='Menor Risco', subtext='Risco Mínimo', color='green')
+                    
+        with col3:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[3], title='Risco Definido', subtext='Risco Definido', color='orange', risk=datas[4])
+
+        with col4:
+            container = st.container(border=True)
+            with container:
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red')
+        
+        with col1:
+            container = st.container(border=True)
+            with container:
+                formatted_pie = self.formatted_current_datas(datas[-3])
+                self.get_portfolio_pie(current_datas=datas[-3], datas=formatted_pie, title='Portifólio Atual', subtext='Risco não definido')
+
+    def get_total(self, datas):
+        total = []
+        st.write(datas[0].split(": ")[1].strip('%'))
+        for i in datas:
+            total.append(float(i.split(": ")[1].strip('%')))
+
+        st.write(sum(total))
+        return sum(total)
+    
+    def formatted_current_datas(self, datas):
+        new_data = []
+
+        for i in datas['stocks']:
+            new_data.append(f"{i['name']}: {i['value']}%")
+        return new_data
+    
+    def formatted_data_pie(self, datas):
+        st.write(datas)
+        new_data = []
+        total = self.get_total(datas)
+        for i in datas['stocks']:
+            new_data.append(f"{i['name']}: {(i['value'] / total) * 100}%")
+        return new_data
+
+    def show_results(self):
+        self.get_pie_portfolios()
+        fig = st.session_state.result[0]
+        fig.update_layout(
+            title={
+                'text': "Análise de Carteira de Ações (Fronteira Eficiente)",
+                'y': 0.95,       # Posição do título no eixo y (0 a 1)
+                'x': 0.05,          # Posição do título no eixo x (0 a 1)
+                'xanchor': 'left',  # Ancoragem horizontal do título
+                'yanchor': 'top',   # Ancoragem vertical do título
+            },
+            legend=dict(
+                traceorder='normal',  # Ordem dos itens na legenda (normal ou reversed)
+                orientation='h',     # Orientação da legenda ('h' para hmorizontal ou 'v' para vertical)
+                x=0.01,                # Posição da legenda no eixo x (0 a 1)
+                y=1.15,               # Posição da legenda no eixo y (0 a 1, negativo para baixo)
+                xanchor='left',     # Ancoragem horizontal da legenda
+                yanchor='top',        # Ancoragem vertical da legenda
+            ),
+            title_font=dict(size=22, color='#333'),  # Tamanho e cor do título
+        )
+        st.plotly_chart(
+            fig, 
+            use_container_width=True, 
+            config={
+                'displayModeBar': True,  # Hide the mode bar
+                'scrollZoom': True,       # Enable mouse wheel zooming
+                'displaylogo': True,     # Hide the Plotly logo
+                'modeBarButtonsToRemove': ['zoom2d', 'pan2d', 'select2d']  # Remove specific buttons
+            }
+        )
+
+    def show_results_old(self):
+        datas = st.session_state.result
+        container = st.container(border=True)
+        container.markdown(f"<div style='text-align: center; padding-bottom: 1em'><span style='font-weight: 900'>Peso no Ativo Livre de Risco:</span> {datas[4]}</div>", unsafe_allow_html=True)
+
+    def heatmap(self):
+        corr_matrix = st.session_state.result[-1].corr()
+        stocks =  st.session_state.result[-2]
+
+        df_heatmap = []
+        x = 0
+        y = 0
+        for i in corr_matrix.columns:
+            for j in corr_matrix.index:
+                df_heatmap.append([x, y, round(corr_matrix[i][j], 4)])
+                if y >= len(corr_matrix.columns) - 1:
+                    x += 1
+                    y = 0
+                else:
+                    y += 1
+                
+        data = df_heatmap
+
+        option = {
+            "title": {
+                "text": 'Correlação entre Ações',
+                "left": '5%',
+                "top": 'top'
+            },
+            "tooltip": {
+                "position": 'top'
+            },
+            "grid": {
+                "height": '50%',
+                "top": '10%'
+            },
+            "xAxis": {
+                "type": 'category',
+                "data": stocks[::-1],
+                "splitArea": {
+                    "show": True
+                }
+            },
+            "yAxis": {
+            "type": 'category',
+            "data": stocks[::-1],
+            "splitArea": {
+                "show": True
+            }
+            },
+            "visualMap": {
+                "min": corr_matrix.min().min(),
+                "max": corr_matrix.max().max(),
+                "calculable": True,
+                "orient": 'horizontal',
+                "left": 'center',
+                "bottom": '15%'
+            },
+            "series": [
+                {
+                    "name": 'Punch Card',
+                    "type": 'heatmap',
+                    "data": data,
+                    "label": {
+                    "show": True
+                    },
+                    "emphasis": {
+                    "itemStyle": {
+                        "shadowBlur": 10,
+                        "shadowColor": 'rgba(0, 0, 0, 0.5)'
+                    }
+                    }
+                }
+            ]
+        }
+        st_echarts(options=option, height="400px")

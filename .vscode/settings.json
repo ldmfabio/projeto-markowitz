@@ -9,6 +9,12 @@
     "${workspaceFolder}/__pypackages__/3.11/lib"
   ],
   "conventionalCommits.scopes": [
-    "main"
+    "main",
+    "heatmap",
+    "pie-charts",
+    "user",
+    "about",
+    "login",
+    "portfolio"
   ]
 }

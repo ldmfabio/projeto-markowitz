@@ -3,7 +3,9 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 
+from utils import *
 def main():
+    add_custom_css()
     with open('./config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
@@ -81,10 +83,10 @@ if __name__ == "__main__":
 # from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 # import yaml
 # from yaml.loader import SafeLoader
-# from manager.user_manager import UserManager  # Assuming you're using UserManager
+#   # Assuming you're using UserManager
 
 # def main():
-#     user_manager = UserManager()
+#     
 
 #     st.set_page_config(
 #         page_title="Perfil",

@@ -1,28 +1,25 @@
 import streamlit as st
 import pandas as pd
-from manager.user_manager import UserManager
+
+from utils import *
 
 def main():
-    user_manager = UserManager()
-    user_manager.verify_user()
+    
     st.set_page_config(
         page_title="Adicionar Carteira", 
         page_icon="➕", 
         layout="wide", 
         initial_sidebar_state="collapsed"
     )
+    add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
 
     with col1:
-        st.divider()
-        st.page_link("app.py", use_container_width=True, label="Ferramenta", icon="📈")
-        st.page_link("pages/about.py", use_container_width=True, label="Sobre o Projeto", icon="📄")
-        st.page_link("pages/portfolio.py", use_container_width=True, label="Carteiras", icon="💼")
-        st.page_link("pages/user.py", use_container_width=True, label="Perfil", icon="👾")
-        st.divider() 
+        create_navbar()
     with col3:
-        st.title("Adicionar Carteira")
+        st.write("")
+        st.write("## Adicionar Carteira")
         cols_form_portflio = st.columns([4,1])
 
         with cols_form_portflio[0]:
@@ -32,7 +29,7 @@ def main():
             )
         
         with cols_form_portflio[1]:
-            number = st.number_input('Digite o número de', step=1, max_value=5,  min_value=1, value=1)
+            number = st.number_input('Digite o número de ações', step=1, max_value=5,  min_value=1, value=1)
 
         stocks = [st.text_input(f"Nome da Ação {i+1}", placeholder="Digite aqui") for i in range(number)]
 
@@ -52,8 +49,8 @@ def main():
                     "name": name_portfolio,
                     "stocks": stocks
                 })
-                st.success('Adicionado com sucesso', icon="✅")
-            else:    
+                st.switch_page("pages/portfolio.py")
+            else:
                 st.warning("Preencha todos os campos", icon="⚠️")
 
 if __name__ == "__main__":
