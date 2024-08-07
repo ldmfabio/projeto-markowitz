@@ -1,18 +1,9 @@
 import streamlit as st
-from manager.user_manager import UserManager
 from manager.app_manager import AppManager
-
-import pandas as pd
-import numpy as np
-import altair as alt
-
 from utils import *
 
 def main():
-    user_manager = UserManager()
     app_manager = AppManager()
-    user_manager.verify_user()
-
     st.set_page_config(
         page_title="Ferramenta", 
         page_icon="📉", 
@@ -20,14 +11,10 @@ def main():
         initial_sidebar_state="collapsed"
     )
     add_custom_css()
-
     col1, col2, col3 = st.columns([1, .2, 5])
-
     with col1:      
         create_navbar(type='tool')
-        
         st.write("__Opções__")
-        
         st.write("Carteiras Cadastradas")
         if len(st.session_state.portfolios) > 0:
             portfolio_titles = [portfolio['name'] for portfolio in st.session_state.portfolios]
@@ -40,18 +27,15 @@ def main():
             label_visibility='collapsed',
             disabled=len(st.session_state.portfolios) == 0,
         )
-
         st.write("Selecione o período de tempo:")
         time_period = st.radio(
             "Selecione o período de tempo:",
             ('3 anos', '5 anos'),
             label_visibility='collapsed',
         )
-        
         if st.button('Fazer Busca', type='primary', use_container_width=True):
             selected_portfolio = next((item for item in st.session_state.portfolios if item['name'] == portfolio), None)
             st.session_state.result = app_manager.run(time_period, selected_portfolio["stocks"], selected_portfolio)
-        
         st.divider()
         st.write("")
         st.image('./assets/img/group3.png', use_column_width=True)
@@ -60,7 +44,7 @@ def main():
             st.write("")
             st.write("## Resultado da Análise")
             st.caption("Este resultado foi alcançado por meio de uma análise detalhada dos dados históricos de ações, utilizando o método de Markowitz para identificar a combinação ideal de ativos que maximiza o retorno esperado para um dado nível de risco.")
-            st.write(f"*Você selecionou a carteira __{portfolio}__ e o período de __{time_period}__*")
+            st.write(f"*Você selecionou a carteira __{portfolio}__ e o período de __{time_period}__ ( Taxa livre de risco: __{app_manager.get_selic() * 100} %__ )*")
             app_manager.show_results()
             app_manager.heatmap()
         else:

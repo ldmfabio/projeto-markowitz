@@ -11,11 +11,13 @@ import json
 import random
 import random
 import datetime
+from manager.cov_matrix import cov1Para
 from utils import *
 
 class AppManager:
     def __init__(self):
         self.init_session_state()
+        self.verify_user()
 
     def init_session_state(self):
         st.session_state.show_result = st.session_state.get('show_result', False)
@@ -65,6 +67,16 @@ class AppManager:
             }
         ])
         st.session_state.selected_option = st.session_state.get('selected_option', "Número de Ações")
+        if 'username' not in st.session_state:
+            st.session_state['username'] = None
+        if 'name' not in st.session_state:
+            st.session_state['name'] = None
+        if 'email' not in st.session_state:
+            st.session_state['email'] = None
+
+    def verify_user(self):
+        if st.session_state.get('authentication_status') != True:
+            st.switch_page("pages/login.py")
     
     def formatted_real(self, value):
         return f"{value:.2f}".replace(".", ",")
@@ -247,7 +259,9 @@ class AppManager:
 
         returns = table.pct_change().dropna()
         mean_returns = returns.mean()
-        cov_matrix = returns.cov() # alterar para outra função
+        nl, nc = returns.shape
+        returns = returns[1:nl]
+        cov_matrix = cov1Para(returns)
         risk_free_rate = self.get_selic()
 
         # ===========================================
@@ -388,10 +402,19 @@ class AppManager:
         return [fig, low_risk_portfolio, better_risk_return_portfolio, defined_risk_portfolio, risk_free_rate_asset, selected_portfolio, stocks, table.pct_change().dropna()]
     
 
-    def get_portfolio_pie(self, datas, title, subtext='Fake Data', color='gray', risk=False):
+    def get_portfolio_pie(self, current_datas, datas, title, subtext='Fake Data', color='gray', risk=False):
+        current_datas = self.formatted_current_datas(current_datas)
+        total = self.get_total(current_datas)
+
+        percentages = [float(item.split(": ")[1].strip('%')) for item in datas]
         names = [item.split(": ")[0] for item in datas]
-        percentages = [int(float(item.split(": ")[1].strip('%'))) for item in datas]
-        data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
+
+        if risk:
+            names.append('ATIVO LIVRE')
+            percentages.append(float(risk.strip('%')))
+            data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
+        else:
+            data = [{"value": value, "name": name} for value, name in zip(percentages, names)]
 
         if subtext == 'Risco Mínimo':
             risk_colors = ['#56E280', '#1D7C39', '#165D2B', '#0B3017', '#0A2914']
@@ -400,7 +423,7 @@ class AppManager:
         elif subtext == 'Risco Alto':
             risk_colors = ['#EF4949', '#C62525', '#A31E1E', '#811818', '#400C0C']
         elif subtext == 'Risco não definido':
-            risk_colors = ['#D3D3D3', '#A9A9A9', '#808080', '#696969', '#000000']
+            risk_colors = ['#D3D3D3', '#A9A9A9', '#808080', '#696969', '#444']
 
         option = {
             "title": {
@@ -408,7 +431,7 @@ class AppManager:
                 "subtext": subtext,
                 "left": 'center',
                 "textStyle": {
-                    # "color": color
+                    "color": color,
                     "fontSize": "16px",
                 },
                 "subtextStyle": {
@@ -455,15 +478,11 @@ class AppManager:
             }
             ]
         }
-        total = 0
         black = 'color: #000; font-weight: 600'
         st_echarts(options=option, height="300px", key=f'{title}{subtext}{color}')
         for i in data:
-            total += i['value'] 
-            st.markdown(f"<div style='display:flex; justify-content:space-between;'>{i['name']}<p style='text-align: right; { '' if i['value'] == 0 else black}'>R$ {self.formatted_real(i['value'])}</p></div>", unsafe_allow_html=True)
-        if risk:
-            st.markdown(f"<div style='display:flex; justify-content:space-between;'>ATIVO LIVRE<p style='text-align: right; {black}'>R$ {self.formatted_real(calc_value(total, float(risk.strip('%'))))}</p></div>", unsafe_allow_html=True)
-        else:
+            st.markdown(f"<div style='display:flex; justify-content:space-between;'>{i['name']}<p style='text-align: right; { '' if i['value'] == 0 else black}'>R$ {self.formatted_real((float(i['value']) * total) / 100)}</p></div>", unsafe_allow_html=True)
+        if not risk:
             st.markdown(f"<div style='display:flex; justify-content:space-between;'>ATIVO LIVRE<p style='text-align: right;'>R$ {self.formatted_real(0)}</p></div>", unsafe_allow_html=True)
 
     def get_pie_portfolios(self):
@@ -472,28 +491,46 @@ class AppManager:
         with col2:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[1], title='Menor Risco', subtext='Risco Mínimo', color='green')
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[1], title='Menor Risco', subtext='Risco Mínimo', color='green')
                     
         with col3:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[3], title='Risco Definido', subtext='Risco Definido', color='orange')
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[3], title='Risco Definido', subtext='Risco Definido', color='orange', risk=datas[4])
 
         with col4:
             container = st.container(border=True)
             with container:
-                self.get_portfolio_pie(datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red', risk=datas[4])
+                self.get_portfolio_pie(current_datas=datas[-3] ,datas=datas[2], title='Maior Retorno', subtext='Risco Alto', color='red')
         
         with col1:
             container = st.container(border=True)
             with container:
-                formatted_pie = self.formatted_data_pie(datas[-3])
-                self.get_portfolio_pie(datas=formatted_pie, title='Portifólio Atual', subtext='Risco não definido')
+                formatted_pie = self.formatted_current_datas(datas[-3])
+                self.get_portfolio_pie(current_datas=datas[-3], datas=formatted_pie, title='Portifólio Atual', subtext='Risco não definido')
 
-    def formatted_data_pie(self, datas):
+    def get_total(self, datas):
+        total = []
+        st.write(datas[0].split(": ")[1].strip('%'))
+        for i in datas:
+            total.append(float(i.split(": ")[1].strip('%')))
+
+        st.write(sum(total))
+        return sum(total)
+    
+    def formatted_current_datas(self, datas):
         new_data = []
+
         for i in datas['stocks']:
             new_data.append(f"{i['name']}: {i['value']}%")
+        return new_data
+    
+    def formatted_data_pie(self, datas):
+        st.write(datas)
+        new_data = []
+        total = self.get_total(datas)
+        for i in datas['stocks']:
+            new_data.append(f"{i['name']}: {(i['value'] / total) * 100}%")
         return new_data
 
     def show_results(self):

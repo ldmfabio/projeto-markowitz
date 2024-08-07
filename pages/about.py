@@ -2,12 +2,11 @@ import streamlit as st
 from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
 import yaml
 from yaml.loader import SafeLoader
-from manager.user_manager import UserManager
+
 from utils import *
 
 def main():
-    user_manager = UserManager()
-    user_manager.verify_user()
+    
 
     st.set_page_config(
         page_title="Sobre o Projeto", 

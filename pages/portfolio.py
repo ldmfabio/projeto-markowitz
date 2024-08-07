@@ -1,14 +1,13 @@
 import streamlit as st
 import pandas as pd
-from manager.user_manager import UserManager
+
 from manager.app_manager import AppManager
 
 from utils import *
 
 def main(): 
-    user_manager = UserManager()
+    
     app_manager = AppManager()
-    user_manager.verify_user()
     st.set_page_config(
         page_title="Carteiras", 
         page_icon="💼", 

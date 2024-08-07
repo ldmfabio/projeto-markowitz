@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-from manager.user_manager import UserManager
+
 from utils import *
 
 def main():
-    user_manager = UserManager()
-    user_manager.verify_user()
+    
     st.set_page_config(
         page_title="Adicionar Carteira", 
         page_icon="➕", 

@@ -1,11 +1,9 @@
 import streamlit as st
-from manager.user_manager import UserManager
-
+from manager.app_manager import AppManager
 from utils import *
 
 def main():
-    user_manager = UserManager()
-    user_manager.verify_user()
+    app_manager = AppManager()
     st.set_page_config(
         page_title="Adicionar Carteira", 
         page_icon="➕", 
