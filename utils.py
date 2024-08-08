@@ -21,8 +21,16 @@ def loader(text):
         time.sleep(1)
     # fazer um toast no futuro
 
-def calc_value(total, porcentagem):
-    return (porcentagem / 100) * total
+def formatted_real(value):
+    return f"{value:.2f}".replace(".", ",")
+
+def validar_form(name_portfolio, stocks):
+    if name_portfolio == "":
+        return False
+    for stock in stocks:
+        if stock == "":
+            return False
+    return True
 
 def add_custom_css():
     st.markdown(

@@ -1,12 +1,8 @@
 import streamlit as st
-import pandas as pd
-
 from manager.app_manager import AppManager
-
 from utils import *
 
 def main(): 
-    
     app_manager = AppManager()
     st.set_page_config(
         page_title="Carteiras", 
@@ -17,7 +13,6 @@ def main():
     add_custom_css()
 
     col1, col2, col3 = st.columns([1, .2, 5])
-
     with col1:
         create_navbar(type='portfolio')
         st.write("__Opções__")
@@ -37,6 +32,5 @@ def main():
         else:
             app_manager.display_portfolios()
                             
-
 if __name__ == "__main__":
     main()

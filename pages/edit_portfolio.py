@@ -3,7 +3,6 @@ from manager.app_manager import AppManager
 from utils import *
 
 def main():
-    app_manager = AppManager()
     st.set_page_config(
         page_title="Adicionar Carteira", 
         page_icon="➕", 
@@ -11,9 +10,9 @@ def main():
         initial_sidebar_state="collapsed"
     )
     add_custom_css()
+    app_manager = AppManager()
 
     col1, col2, col3 = st.columns([1, .2, 5])
-
     with col1:
         create_navbar()
     with col3:
@@ -29,16 +28,16 @@ def main():
 
         stocks = []
         for j in range(number):
-            value = st.session_state.portfolios_edit['stocks'][j] if j < len(st.session_state.portfolios_edit['stocks']) else ""
+            value = st.session_state.portfolios_edit['stocks'][j] if j < len(st.session_state.portfolios_edit['stocks']) else {"name": "", "value": 0.0}
             cols = st.columns([4,1])
             stock = cols[0].text_input(
                 key=f"stock_{j}",
-                value=value['name'],
+                value=value['name'] if isinstance(value, dict) else "",
                 label=f"Nome da Ação {j+1}",
             )
             stock_value = cols[1].number_input(
                 key=f"stock_value_{j}",
-                value=float(value['value']),
+                value=float(value['value']) if isinstance(value, dict) else 0.0,
                 label=f"Valor Investido (R$)",
                 step=0.01, 
                 max_value=10000.0,
@@ -48,24 +47,9 @@ def main():
             stocks.append({
                 "name": stock,
                 "value": stock_value
-            
             })
 
-        def validar_form(name_portfolio, stocks):
-            if name_portfolio == "":
-                return False
-            for stock in stocks:
-                if stock == "":
-                    return False
-            return True
-
-        
         cols_btn_1, cols_btn_2 = st.columns([1,2])
-
-        # st.write(st.session_state.portfolios[st.session_state.portfolios.index(st.session_state.portfolios_edit)])
-        # st.write(name_portfolio)
-        # st.write(stocks)
-
         with cols_btn_1:
             if st.button("Excluir Carteira", key="delete", use_container_width=True, type="secondary", help="Exclui a carteira"):
                 loader('Excluindo Carteira')
@@ -86,4 +70,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
