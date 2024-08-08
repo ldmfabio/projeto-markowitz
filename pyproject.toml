@@ -16,6 +16,15 @@ dependencies = [
     "pillow>=10.3.0",
     "rpds-py>=0.18.0",
     "pyarrow>=16.0.0",
+    "fastapi>=0.112.0",
+    "uvicorn>=0.30.5",
+    "sqlalchemy>=2.0.32",
+    "psycopg2-binary>=2.9.9",
+    "alembic>=1.13.2",
+    "python-decouple>=3.8",
+    "passlib>=1.7.4",
+    "python-jose>=3.3.0",
+    "python-multipart>=0.0.9",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
