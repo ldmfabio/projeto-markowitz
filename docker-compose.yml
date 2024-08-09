@@ -11,6 +11,12 @@ services:
       - "5432:5432"
     volumes:
       - ./server/db/db_data:/var/lib/postgresql/data
+  frontend:
+    build: .
+    ports:
+      - "8501:8501"
+    depends_on:
+      - db
   
 volumes:
   db_data:

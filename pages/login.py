@@ -14,34 +14,40 @@ def main():
         initial_sidebar_state="collapsed"
     )
     add_custom_css()
-
     st.title("Login")
+
     username = st.text_input(
         key="username",
         value="",
-        label="username"
+        label="Digite seu nome de usuário",
+        placeholder="admin"
     )
     password = st.text_input(
         type="password",
         key="password",
         value="",
-        label="password"
+        label="Digite sua Senha",
+        placeholder="**********"
     )
 
-    if st.button("Login", key="login", use_container_width=True, type="secondary", help="Clique para entrar no sistema"):
-        if username != "" and password != "":
-            st.error("Usuário ou senha inválidos")
-            return
-        try:
-            login(username, password)
-            st.success('Usuário logado')
-        except Exception as e:
-            st.error(e)
+    if st.button("Login", key="login", use_container_width=True, type="primary", help="Clique para entrar no sistema"):
+        if username == "" or password == "":
+            st.error("🚨 Não podem haver campos vazios")
+        else:
+            try:
+                login(username, password)
+                st.success('Usuário logado')
+            except Exception as e:
+                st.error(e)
 
-    st.caption("Opções:")
-    # st.button("Esqueci minha senha", use_container_width=False, help="Clique para redefinir sua senha")
-    if st.button("Registrar novo usuário", use_container_width=False, help="Clique para criar uma nova conta"):
+    if st.button("Ainda não tem uma conta?", use_container_width=True, help="Clique para criar uma nova conta"):
         st.switch_page("pages/create_account.py")
+
+    st.markdown("""
+        <div style="text-align:center;margin-top: 1em;font-size: 1.4em; font-weight: 900;">
+            ModernMKZ
+        </div>         
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
