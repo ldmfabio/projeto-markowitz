@@ -18,23 +18,9 @@ class AppManager:
 
     def init_session_state(self):
         st.session_state.datas = st.session_state.get('datas', {})
-        st.session_state.portfolios = st.session_state.get('portfolios', [
-            {
-                "name": "teste",
-                "stocks": [
-                    {
-                        "name": "PETR4.SA",
-                        "value": 20,
-                    },
-                    {
-                        "name": "VALE3.SA",
-                        "value": 80,
-                    },
-                ] 
-            }
-        ])
+        st.session_state.portfolios = st.session_state.get('portfolios', [])
         st.session_state.selected_option = st.session_state.get('selected_option', "Número de Ações")
-        st.session_state['username'] = st.session_state.get('username', None)
+        st.session_state['user_id'] = st.session_state.get('user_id', None)
         st.session_state['name'] = st.session_state.get('name', None)
         st.session_state['email'] = st.session_state.get('email', None)
         st.session_state['authentication_status'] = st.session_state.get('authentication_status', False)

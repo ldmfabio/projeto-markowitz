@@ -1,6 +1,18 @@
 import streamlit as st
 from manager.app_manager import AppManager
+import requests
 from utils import *
+
+def fetch_portfolios():
+    try:
+        response = requests.get(f'http://127.0.0.1:8000/api/portfolios/?user={st.session_state["user_id"]}')
+        response.raise_for_status()
+        portfolios = response.json()
+        st.session_state['portfolios'] = portfolios
+        return portfolios
+    except requests.exceptions.RequestException as e:
+        st.error(f"❗Erro ao buscar carteiras: {str(e)}")
+        return []
 
 def main():
     app_manager = AppManager()
@@ -11,13 +23,16 @@ def main():
         initial_sidebar_state="collapsed"
     )
     add_custom_css()
+    fetch_portfolios()
+
     col1, col2, col3 = st.columns([1, .2, 5])
+    
     with col1:      
         create_navbar(type='tool')
         st.write("__Opções__")
         st.write("Carteiras Cadastradas")
-        if len(st.session_state.portfolios) > 0:
-            portfolio_titles = [portfolio['name'] for portfolio in st.session_state.portfolios]
+        if len(st.session_state['portfolios']) > 0:
+            portfolio_titles = [portfolio['name'] for portfolio in st.session_state['portfolios']]
         else:
             portfolio_titles = ['Nenhuma Carteira Cadastrada']
         portfolio = st.selectbox(

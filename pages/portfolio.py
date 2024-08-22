@@ -1,6 +1,18 @@
 import streamlit as st
+import requests
 from manager.app_manager import AppManager
-from utils import *
+from utils import add_custom_css, create_navbar, loader
+
+def fetch_portfolios():
+    try:
+        response = requests.get(f'http://127.0.0.1:8000/api/portfolios/?user={st.session_state["user_id"]}')
+        response.raise_for_status()
+        portfolios = response.json()
+        st.session_state['portfolios'] = portfolios
+        return portfolios
+    except requests.exceptions.RequestException as e:
+        st.error(f"❗Erro ao buscar carteiras: {str(e)}")
+        return []
 
 def main(): 
     app_manager = AppManager()
@@ -11,6 +23,7 @@ def main():
         initial_sidebar_state="collapsed"
     )
     add_custom_css()
+    fetch_portfolios()
 
     col1, col2, col3 = st.columns([1, .2, 5])
     with col1:
@@ -23,14 +36,18 @@ def main():
         st.divider()
         st.write("")
         st.image('./assets/img/group3.png', use_column_width=True)
+
     with col3:
         st.write("")
         st.write("## Suas Carteiras")
         st.info("Aqui você pode visualizar e gerenciar suas carteiras de ações.")
-        if st.session_state.portfolios == []:
+
+        portfolios = st.session_state['portfolios']
+
+        if not portfolios:
             st.caption("## Você ainda não possui nenhuma carteira cadastrada.")
         else:
             app_manager.display_portfolios()
-                            
+
 if __name__ == "__main__":
     main()

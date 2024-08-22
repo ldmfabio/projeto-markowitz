@@ -1,10 +1,25 @@
 import streamlit as st
+import requests
 from utils import add_custom_css, loader
 
-def login(username, password):
+def login(email, password):
     loader('Carregando...')
-    st.session_state['authentication_status'] = True
-    st.switch_page("pages/user.py")
+    try:
+        response = requests.post(
+            'http://127.0.0.1:8000/api/login/',
+            json={'email': email, 'password': password}
+        )
+        response.raise_for_status()
+        data = response.json()
+        if data['access']:
+            st.session_state['authentication_status'] = True
+            st.session_state['user_id'] = data['id']
+            st.success('Usuário logado')
+            st.switch_page("pages/user.py")
+        else:
+            st.error('❗Falha na autenticação')
+    except requests.exceptions.RequestException as e:
+        st.error('❗Falha na autenticação')
 
 def main():
     st.set_page_config(
@@ -16,11 +31,11 @@ def main():
     add_custom_css()
     st.title("Login")
 
-    username = st.text_input(
-        key="username",
+    email = st.text_input(
+        key="email",
         value="",
-        label="Digite seu nome de usuário",
-        placeholder="admin"
+        label="Digite seu Email",
+        placeholder="Ex: admin@admin.com"
     )
     password = st.text_input(
         type="password",
@@ -31,14 +46,10 @@ def main():
     )
 
     if st.button("Login", key="login", use_container_width=True, type="primary", help="Clique para entrar no sistema"):
-        if username == "" or password == "":
+        if email == "" or password == "":
             st.error("🚨 Não podem haver campos vazios")
         else:
-            try:
-                login(username, password)
-                st.success('Usuário logado')
-            except Exception as e:
-                st.error(e)
+            login(email, password)
 
     if st.button("Ainda não tem uma conta?", use_container_width=True, help="Clique para criar uma nova conta"):
         st.switch_page("pages/create_account.py")
