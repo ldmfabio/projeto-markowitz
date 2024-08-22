@@ -1,8 +1,33 @@
 import streamlit as st
-from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
-import yaml
-from yaml.loader import SafeLoader
-import streamlit_authenticator as stauth
+import requests
+from utils import add_custom_css, loader
+
+def create_user(name, email, password, confirm_password):
+    loader('Carregando...')
+    try:
+        if password != confirm_password:
+            st.error("❗As senhas não correspondem")
+            return
+
+        response = requests.post(
+            'http://127.0.0.1:8000/api/register/',
+            json={
+                'name': name,
+                'email': email,
+                'password': password
+            }
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        if response.status_code == 201:  # Supondo que 201 é o código para criação bem-sucedida
+            st.success('Usuário criado com sucesso! Redirecionando para login...')
+            st.switch_page("pages/login.py")
+        else:
+            st.error(f"❗Erro ao criar conta: {data.get('detail', 'Erro desconhecido')}")
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"❗Erro na requisição: {str(e)}")
 
 def main():
     st.set_page_config(
@@ -11,33 +36,28 @@ def main():
         layout="centered", 
         initial_sidebar_state="collapsed"
     )
-
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
-
-    auth_handler = AuthenticationHandler(credentials=config['credentials'])
+    add_custom_css()
 
     st.title("Criar Conta")
-    username = st.text_input("Usuário:")
-    name = st.text_input("Nome Completo:")
-    email = st.text_input("Email:")
-    password = st.text_input("Senha:", type="password")
-    confirm_password = st.text_input("Confirmar Senha:", type="password")
+    name = st.text_input("Nome Completo:", placeholder="Mateus Lopes Albano")
+    email = st.text_input("Email:", placeholder="mateusalbano22@gmail.com")
+    password = st.text_input("Senha:", type="password", placeholder="*********")
+    confirm_password = st.text_input("Confirmar Senha:", type="password", placeholder="*********")
 
     if st.button("Criar Conta", use_container_width=True, type='primary', help="Clique para criar uma nova conta"):
-        if auth_handler.register_user(new_password=password, new_password_repeat=confirm_password, pre_authorization=False, new_username=username, new_name=name, new_email=email):
-            with open('./config.yaml', 'w') as file:
-                yaml.dump(config, file, default_flow_style=False)
-            st.success("Conta criada com sucesso!")
+        if name == '' or email == '' or password == '' or confirm_password == '':
+            st.error("🚨 Não podem haver campos vazios")
         else:
-            st.error("Erro ao criar conta")
-    elif st.session_state['authentication_status'] is False:
-        st.error('Erro ao criar conta')
-    elif st.session_state['authentication_status'] is None:
-        st.warning('Por favor, preencha os campos')
-    
-    st.caption("Opções:")
-    st.button("Já tenho uma conta", use_container_width=False, help="Clique para fazer login")
+            create_user(name, email, password, confirm_password)
+
+    if st.button("Já tenho uma conta!", use_container_width=True, help="Clique para fazer login"):
+        st.switch_page("pages/login.py")
+
+    st.markdown("""
+        <div style="text-align:center;margin-top: 1em;font-size: 1.4em; font-weight: 900;">
+            ModernMKZ
+        </div>         
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

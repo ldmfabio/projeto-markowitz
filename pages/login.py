@@ -1,7 +1,25 @@
 import streamlit as st
-from streamlit_authenticator.authenticate.authentication import AuthenticationHandler
-import yaml
-from yaml.loader import SafeLoader
+import requests
+from utils import add_custom_css, loader
+
+def login(email, password):
+    loader('Carregando...')
+    try:
+        response = requests.post(
+            'http://127.0.0.1:8000/api/login/',
+            json={'email': email, 'password': password}
+        )
+        response.raise_for_status()
+        data = response.json()
+        if data['access']:
+            st.session_state['authentication_status'] = True
+            st.session_state['user_id'] = data['id']
+            st.success('Usuário logado')
+            st.switch_page("pages/user.py")
+        else:
+            st.error('❗Falha na autenticação')
+    except requests.exceptions.RequestException as e:
+        st.error('❗Falha na autenticação')
 
 def main():
     st.set_page_config(
@@ -10,35 +28,37 @@ def main():
         layout="centered", 
         initial_sidebar_state="collapsed"
     )
-
-    with open('./config.yaml') as file:
-        config = yaml.load(file, Loader=SafeLoader)
-
-    auth_handler = AuthenticationHandler(credentials=config['credentials'])
-
+    add_custom_css()
     st.title("Login")
-    username = st.text_input("Usuário:")
-    password = st.text_input("Senha:", type="password")
 
-    if st.button("Login", use_container_width=True, type='primary', help="Clique para fazer login"):
-        if auth_handler.check_credentials(username, password):
-            st.session_state['authentication_status'] = True
-            st.session_state['username'] = username
-            st.session_state['name'] = auth_handler.credentials['usernames'][username]['name']
-            st.session_state['email'] = auth_handler.credentials['usernames'][username]['email']
-            st.success("Login realizado com sucesso!")
-            st.switch_page("pages/user.py")
+    email = st.text_input(
+        key="email",
+        value="",
+        label="Digite seu Email",
+        placeholder="Ex: admin@admin.com"
+    )
+    password = st.text_input(
+        type="password",
+        key="password",
+        value="",
+        label="Digite sua Senha",
+        placeholder="**********"
+    )
+
+    if st.button("Login", key="login", use_container_width=True, type="primary", help="Clique para entrar no sistema"):
+        if email == "" or password == "":
+            st.error("🚨 Não podem haver campos vazios")
         else:
-            st.error("Usuário ou senha inválidos")
-    elif st.session_state['authentication_status'] is False:
-        st.error('Nome de usuário/senha incorretos')
-    elif st.session_state['authentication_status'] is None:
-        st.warning('Por favor, insira seu nome de usuário e senha')
+            login(email, password)
 
-    st.caption("Opções:")
-    st.button("Esqueci minha senha", use_container_width=False, help="Clique para redefinir sua senha")
-    if st.button("Registrar novo usuário", use_container_width=False, help="Clique para criar uma nova conta"):
+    if st.button("Ainda não tem uma conta?", use_container_width=True, help="Clique para criar uma nova conta"):
         st.switch_page("pages/create_account.py")
+
+    st.markdown("""
+        <div style="text-align:center;margin-top: 1em;font-size: 1.4em; font-weight: 900;">
+            ModernMKZ
+        </div>         
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
